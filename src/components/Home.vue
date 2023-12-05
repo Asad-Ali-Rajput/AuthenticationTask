@@ -12,12 +12,12 @@ const fetchProfile = async () => {
   } catch (error) {
     console.error('Error fetching profile:', error);
   }
-};
+}
 
 // Call the fetchProfile function when the component is mounted
 onMounted(() => {
-  fetchProfile();
-});
+  fetchProfile()
+})
 </script>
 
 <template>
