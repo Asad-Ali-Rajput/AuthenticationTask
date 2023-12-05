@@ -1,20 +1,49 @@
 <script setup>
-import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
+import { EyeIcon, EyeSlashIcon, ChevronDownIcon } from '@heroicons/vue/24/outline'
 import { ref } from 'vue'
 import { useForm, createSubmitHandler } from 'vue-use-form'
 import { useToast } from 'vue-toastification'
+import axios from 'axios'
 
 const toast = useToast()
 const showPassword = ref(false)
 const passwordInputType = ref('password')
 const showConfirmPassword = ref(false)
 const confirmPasswordInputType = ref('password')
+const isDropdownOpen = ref(false)
+const selectedOption = ref(null)
+const hoveredOption = ref(null)
 
-const { 
-  register, 
+const {
+  register,
   formState: { errors },
   handleSubmit,
-} = useForm()
+} = useForm({
+  defaultValues: {
+    name: '',
+    email: '',
+    role: '',
+    password: '',
+  }
+})
+
+const toggleDropdown = () => {
+  console.log("here", isDropdownOpen.value)
+  isDropdownOpen.value = !isDropdownOpen.value
+}
+
+const closeDropdown = () => {
+  isDropdownOpen.value = false
+}
+
+const selectOption = (option) => {
+  selectedOption.value = option
+  isDropdownOpen.value = false
+
+  // Update the selected role in the form data
+  console.log(option)
+  register('role', { value: option })
+}
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
@@ -27,15 +56,21 @@ const toggleConfirmPasswordVisibility = () => {
 }
 
 const onSubmit = createSubmitHandler(async (data) => {
-    try {
-      const response = await axios.post('/api/login', data)
-      toast.success(String(response.message))
+  console.log(data.role)
+  try {
+    const response = await axios.post('http://localhost:5000/api/user/create', {
+      name: data.name.el._value,
+      email: data.email.el._value,
+      role: selectedOption.value,
+      password: data.password.el._value,
+    })
+    toast.success(String(response.message))
 
-      // Redirect or perform other actions upon successful login
-    } catch (error) {
-      toast.error(String(err))
-    }
-  })
+    // Redirect or perform other actions upon successful login
+  } catch (error) {
+    toast.error(String(error))
+  }
+})
 </script>
 
 <template>
@@ -46,23 +81,35 @@ const onSubmit = createSubmitHandler(async (data) => {
         <p class="text-gray-400">Fill out the form to register</p>
         <div>
           <div class="py-6">
-            <input type="text" id="fullname" name="fullname"
+            <input type="text" id="name" name="name"
               class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
-              placeholder="Full name" required :="register('fullname', {required: 'fullname cannot be empty'})">
-              <span v-if="errors.fullname">{{ errors.fullname }}</span>
-            <input type="phone" id="cellnumber" name="cellnumber"
+              placeholder="Full name" required :="register('name', { required: 'fullname cannot be empty' })">
+            <span v-if="errors.name">{{ errors.name }}</span>
+            <!-- <input type="phone" id="cellnumber" name="cellnumber"
               class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
-              placeholder="Number" required :="register('cellnumber', { required: 'Phone number cannot be empty' })">
-              <span v-if="errors.cellnumber">{{ errors.cellnumber }}</span>
-            <input type="email" id="username" name="username"
+              placeholder="Number" required :="register('cellnumber', { required: 'Phone number cannot be empty' })"> -->
+            <div class="w-full">
+              <div class="mb-4 rounded-lg relative inline-block w-full" @mouseleave="closeDropdown()">
+                <div class="bg-white text-[#333] cursor-pointer p-2.5 rounded-lg border border-slate-300 flex justify-between items-center" @click="toggleDropdown()">
+                  {{ selectedOption || 'Choose a role' }}
+                  <ChevronDownIcon class="h-4 w-4 text-violet-500"/>
+                </div>
+                <ul v-show="isDropdownOpen" class="dropdown-content">
+                  <li @click="selectOption('user')" :class="{ 'hovered': hoveredOption === 'user' }">User</li>
+                  <li @click="selectOption('admin')" :class="{ 'hovered': hoveredOption === 'admin' }">Admin</li>
+                </ul>
+              </div>
+            </div>
+            <span v-if="errors.role">{{ errors.role }}</span>
+            <input type="email" id="email" name="email"
               class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
-              placeholder="Email" required :="register('username', { required: 'Email field cannot be empty!' })">
-              <span v-if="errors.username">{{ errors.username }}</span>
+              placeholder="Email" required :="register('email', { required: 'Email field cannot be empty!' })">
+            <span v-if="errors.email">{{ errors.email }}</span>
             <div class="relative">
-              <input id="password"
-              name="password"
+              <input id="password" name="password"
                 class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
-                :type="passwordInputType" placeholder="Password" required :="register('password', { required: 'Password field cannot be empty!' })">
+                :type="passwordInputType" placeholder="Password" required
+                :="register('password', { required: 'Password field cannot be empty!' })">
               <button class="absolute bottom-2 right-3" @click="togglePasswordVisibility()">
                 <span v-if="!showPassword">
                   <EyeSlashIcon class="h-6 w-6 text-violet-500" />
@@ -74,10 +121,10 @@ const onSubmit = createSubmitHandler(async (data) => {
             </div>
             <span v-if="errors.password">{{ errors.password }}</span>
             <div class="relative">
-              <input id="confirmpassword"
-              name="confirmpassword"
+              <input id="confirmpassword" name="confirmpassword"
                 class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
-                :type="confirmPasswordInputType" placeholder="Confirm password" required :="register('confirmpassword', { required: 'Confirm password field cannot be empty!' })">
+                :type="confirmPasswordInputType" placeholder="Confirm password" required
+                :="register('confirmpassword', { required: 'Confirm password field cannot be empty!' })">
               <button class="absolute bottom-2 right-3" @click="toggleConfirmPasswordVisibility()">
                 <span v-if="!showConfirmPassword">
                   <EyeSlashIcon class="h-6 w-6 text-violet-500" />
@@ -100,4 +147,41 @@ const onSubmit = createSubmitHandler(async (data) => {
     </div>
     <div class="w-1/2 h-screen flex justify-center items-center bg-violet-500"><img src="../assets/3783954.webp"
         alt="signin logo" /></div>
-  </div></template>
+  </div>
+</template>
+
+<style scoped>
+
+/* Style for the dropdown content */
+.dropdown-content {
+  width: 100%;
+  position: absolute;
+  background-color: #fff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  z-index: 1;
+  list-style-type: none;
+  padding: 0;
+}
+
+/* Style for dropdown options */
+.dropdown-content li {
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Hover effect for dropdown options */
+.dropdown-content li:hover {
+  background-color: #9061F9;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Style for hovered option */
+.dropdown-content li.hovered {
+  background-color: #9061F9;
+  color: #fff;
+  font-weight: bold;
+}
+</style>
