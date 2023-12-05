@@ -2,7 +2,7 @@
 import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
 import { ref } from 'vue'
 import { useForm, createSubmitHandler } from 'vue-use-form'
-// import { useToast } from 'vue-toastification'
+import { useToast } from 'vue-toastification'
 
 const toast = useToast()
 const showPassword = ref(false)
@@ -29,7 +29,7 @@ const toggleConfirmPasswordVisibility = () => {
 const onSubmit = createSubmitHandler(async (data) => {
     try {
       const response = await axios.post('/api/login', data)
-      toast.message(String(response.message))
+      toast.success(String(response.message))
 
       // Redirect or perform other actions upon successful login
     } catch (error) {
