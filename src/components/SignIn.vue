@@ -1,11 +1,15 @@
 <script setup>
 import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { useForm, createSubmitHandler } from 'vue-use-form'
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification'
 import axios from 'axios'
+import OTPView from '../views/OTPView.vue'
+import { useStore } from 'vuex'
 
+const store = useStore()
+const isModalOpen = ref(store.state.isOpenModal)
 const toast = useToast()
 const router = useRouter()
 const showPassword = ref(false)
@@ -17,18 +21,29 @@ const {
   handleSubmit,
 } = useForm()
 
+watchEffect(() => {
+  // Update the value of isModalOpen when the store state changes
+  console.log("isModalOpen.value",isModalOpen.value)
+  isModalOpen.value = store.state.isOpenModal;
+})
+
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
   passwordInputType.value = showPassword.value ? 'text' : 'password'
 }
 
 const onSubmit = createSubmitHandler(async (data) => {
+  console.log(isModalOpen.value)
+  store.commit('openModal')
     try {
-      const response = await axios.post('/api/login', data)
+      const response = await axios.post('http://localhost:5000/api/user/login', {
+        email: data.email.el._value,
+        password: data.password.el._value,
+      })
       const { token, refreshToken } = response.data
 
       // Store the tokens in store's state for later use
-      this.$store.dispatch('login', {
+      store.dispatch('login', {
         accessToken: token,
         refreshToken: refreshToken,
       });
@@ -49,8 +64,8 @@ const onSubmit = createSubmitHandler(async (data) => {
         <p class="text-gray-400">Enter your email and password to sign in</p>
         <div>
           <div class="py-6 relative">
-            <input type="email" id="username" name="username" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" placeholder="Email" required :="register('username', { required: 'Email field cannot be empty!' })">
-            <span v-if="errors.username">{{ errors.username }}</span>
+            <input type="email" id="email" name="email" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" placeholder="Email" required :="register('email', { required: 'Email field cannot be empty!' })">
+            <span v-if="errors.email">{{ errors.email }}</span>
             <div class="relative">
               <input id="password" name="password"
                 class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
@@ -73,5 +88,8 @@ const onSubmit = createSubmitHandler(async (data) => {
       </form>
     </div>
     <div class="w-1/2 h-screen flex justify-center items-center bg-violet-500"><img src="../assets/3783954.webp" alt="signin logo" /></div>
+  </div>
+  <div :v-if="!isModalOpen.value">
+    <OTPView />
   </div>
 </template>
