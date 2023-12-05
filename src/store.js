@@ -5,6 +5,7 @@ export default createStore({
   state: {
     accessToken: null,
     refreshToken: null,
+    isOpenModal: false,
   },
   mutations: {
     setTokens(state, { accessToken, refreshToken }) {
@@ -15,6 +16,12 @@ export default createStore({
       state.accessToken = null
       state.refreshToken = null
     },
+    openModal(state) {
+      state.isOpenModal = true;
+    },
+    closeModal(state) {
+      state.isOpenModal = false;
+    },
   },
   actions: {
     login({ commit }, { accessToken, refreshToken }) {
@@ -22,6 +29,12 @@ export default createStore({
     },
     logout({ commit }) {
       commit('clearTokens')
+    },
+    openModal({ commit }) {
+      commit('openModal');
+    },
+    closeModal({ commit }) {
+      commit('closeModal');
     },
   },
   getters: {
