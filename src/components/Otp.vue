@@ -102,7 +102,6 @@ const handleKeyDown = async function (event, index) {
 </script> -->
 
 <script>
-import { useStore } from 'vuex'
 import { useToast } from 'vue-toastification'
 import axios from 'axios'
 
@@ -123,7 +122,6 @@ export default {
             toast: useToast(),
             otpValue: '',
             digits: [],
-            // otpCont: null
         };
     },
     methods: {
