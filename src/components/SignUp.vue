@@ -1,76 +1,121 @@
-<script setup>
+<script>
 import { EyeIcon, EyeSlashIcon, ChevronDownIcon } from '@heroicons/vue/24/outline'
-import { ref } from 'vue'
-import { useForm, createSubmitHandler } from 'vue-use-form'
+import { useForm } from 'vue-use-form'
 import { useToast } from 'vue-toastification'
 import axios from 'axios'
+import OTPView from '../views/OTPView.vue'
 
-const toast = useToast()
-const showPassword = ref(false)
-const passwordInputType = ref('password')
-const showConfirmPassword = ref(false)
-const confirmPasswordInputType = ref('password')
-const isDropdownOpen = ref(false)
-const selectedOption = ref(null)
-const hoveredOption = ref(null)
+export default {
+  data() {
+    const {
+      register,
+      handleSubmit,
+      formState: { errors },
+    } = useForm({
+      defaultValues: {
+        name: '',
+        email: '',
+        role: '',
+        password: '',
+      }
+    })
+    return {
+      toast: useToast(),
+      isModalOpen: this.$store._state.data.isOpenModal,
+      showPassword: false,
+      passwordInputType: 'password',
+      showConfirmPassword: false,
+      confirmPasswordInputType: 'password',
+      isDropdownOpen: false,
+      selectedOption: null,
+      hoveredOption: null,
+      register,
+      errors,
+      handleSubmit,
+    };
+  },
+  computed: {
+    isModalOpen() {
+      return this.$store._state.data.isOpenModal
+    },
+  },
+  methods: {
+    toggleDropdown() {
+      this.isDropdownOpen = !this.isDropdownOpen;
+    },
+    closeDropdown() {
+      this.isDropdownOpen = false;
+    },
+    selectOption(option) {
+      this.selectedOption = option;
+      this.isDropdownOpen = false;
+      // this.$set(this.form, 'role', option);
+      this.register('role', { value: option })
+    },
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+      this.passwordInputType = this.showPassword ? 'text' : 'password';
+    },
+    toggleConfirmPasswordVisibility() {
+      this.showConfirmPassword = !this.showConfirmPassword;
+      this.confirmPasswordInputType = this.showConfirmPassword ? 'text' : 'password';
+    },
+    // async onSubmit(data) {
+    //   this.$store.dispatch('openModal')
+    //   try {
+    //     const response = await axios.post('http://localhost:5000/api/user/create', {
+    //       name: data.name.el._value,
+    //       email: data.email.el._value,
+    //       role: this.selectedOption.value,
+    //       password: data.password.el._value,
+    //     });
+    //     this.toast.success(String(response.message));
 
-const {
-  register,
-  formState: { errors },
-  handleSubmit,
-} = useForm({
-  defaultValues: {
-    name: '',
-    email: '',
-    role: '',
-    password: '',
-  }
-})
-
-const toggleDropdown = () => {
-  console.log("here", isDropdownOpen.value)
-  isDropdownOpen.value = !isDropdownOpen.value
-}
-
-const closeDropdown = () => {
-  isDropdownOpen.value = false
-}
-
-const selectOption = (option) => {
-  selectedOption.value = option
-  isDropdownOpen.value = false
-
-  // Update the selected role in the form data
-  console.log(option)
-  register('role', { value: option })
-}
-
-const togglePasswordVisibility = () => {
-  showPassword.value = !showPassword.value
-  passwordInputType.value = showPassword.value ? 'text' : 'password'
-}
-
-const toggleConfirmPasswordVisibility = () => {
-  showConfirmPassword.value = !showConfirmPassword.value
-  confirmPasswordInputType.value = showConfirmPassword.value ? 'text' : 'password'
-}
-
-const onSubmit = createSubmitHandler(async (data) => {
-  console.log(data.role)
+    //     // Redirect or perform other actions upon successful login
+    //   } catch (error) {
+    //     this.toast.error(String(error));
+    //   }
+    // },
+    async onSubmit(data) {
   try {
+    // Dispatch the action to set the user state
+    this.$store.dispatch('user/setUser', {
+      name: data.name.el._value,
+      email: data.email.el._value,
+      role: data.role.inputValue._value,
+      password: data.password.el._value,
+    });
+    this.$store.dispatch('openModal');
+
     const response = await axios.post('http://localhost:5000/api/user/create', {
       name: data.name.el._value,
       email: data.email.el._value,
-      role: selectedOption.value,
+      role: data.role.inputValue._value,
       password: data.password.el._value,
-    })
-    toast.success(String(response.message))
+    });
 
-    // Redirect or perform other actions upon successful login
+    const responseOtp = await axios.post('http://localhost:5000/api/otp', {
+      email: data.email.el._value,
+    });
+    this.toast.success(String(responseOtp.data.message))
+    // Check if OTP state is not empty
+    if (this.$store.getters['getOtp']) {
+      this.toast.success(String(response.data.message))
+    } else {
+      this.toast.error("Verify your account")
+    }
   } catch (error) {
-    toast.error(String(error))
+    this.toast.error(String(error));
   }
-})
+},
+  },
+  components: {
+    OTPView,
+    EyeIcon,
+    EyeSlashIcon,
+    ChevronDownIcon
+  },
+};
 </script>
 
 <template>
@@ -85,14 +130,13 @@ const onSubmit = createSubmitHandler(async (data) => {
               class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
               placeholder="Full name" required :="register('name', { required: 'fullname cannot be empty' })">
             <span v-if="errors.name">{{ errors.name }}</span>
-            <!-- <input type="phone" id="cellnumber" name="cellnumber"
-              class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
-              placeholder="Number" required :="register('cellnumber', { required: 'Phone number cannot be empty' })"> -->
             <div class="w-full">
               <div class="mb-4 rounded-lg relative inline-block w-full" @mouseleave="closeDropdown()">
-                <div class="bg-white text-[#333] cursor-pointer p-2.5 rounded-lg border border-slate-300 flex justify-between items-center" @click="toggleDropdown()">
+                <div
+                  class="bg-white text-[#333] cursor-pointer p-2.5 rounded-lg border border-slate-300 flex justify-between items-center"
+                  @click="toggleDropdown()">
                   {{ selectedOption || 'Choose a role' }}
-                  <ChevronDownIcon class="h-4 w-4 text-violet-500"/>
+                  <ChevronDownIcon class="h-4 w-4 text-violet-500" />
                 </div>
                 <ul v-show="isDropdownOpen" class="dropdown-content">
                   <li @click="selectOption('user')" :class="{ 'hovered': hoveredOption === 'user' }">User</li>
@@ -110,7 +154,7 @@ const onSubmit = createSubmitHandler(async (data) => {
                 class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
                 :type="passwordInputType" placeholder="Password" required
                 :="register('password', { required: 'Password field cannot be empty!' })">
-              <button class="absolute bottom-2 right-3" @click="togglePasswordVisibility()">
+              <button type="button" class="absolute bottom-2 right-3" @click="togglePasswordVisibility">
                 <span v-if="!showPassword">
                   <EyeSlashIcon class="h-6 w-6 text-violet-500" />
                 </span>
@@ -125,7 +169,7 @@ const onSubmit = createSubmitHandler(async (data) => {
                 class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
                 :type="confirmPasswordInputType" placeholder="Confirm password" required
                 :="register('confirmpassword', { required: 'Confirm password field cannot be empty!' })">
-              <button class="absolute bottom-2 right-3" @click="toggleConfirmPasswordVisibility()">
+              <button type="button" class="absolute bottom-2 right-3" @click="toggleConfirmPasswordVisibility">
                 <span v-if="!showConfirmPassword">
                   <EyeSlashIcon class="h-6 w-6 text-violet-500" />
                 </span>
@@ -135,7 +179,6 @@ const onSubmit = createSubmitHandler(async (data) => {
               </button>
             </div>
             <span v-if="errors.confirmpassword">{{ errors.confirmpassword }}</span>
-            <RouterLink to="#" class="text-violet-500 active:text-violet-500">Forget Password?</RouterLink>
           </div>
         </div>
         <button type="submit"
@@ -148,10 +191,10 @@ const onSubmit = createSubmitHandler(async (data) => {
     <div class="w-1/2 h-screen flex justify-center items-center bg-violet-500"><img src="../assets/3783954.webp"
         alt="signin logo" /></div>
   </div>
+  <component :is="isModalOpen ? 'OTPView' : 'div'"></component>
 </template>
 
 <style scoped>
-
 /* Style for the dropdown content */
 .dropdown-content {
   width: 100%;
