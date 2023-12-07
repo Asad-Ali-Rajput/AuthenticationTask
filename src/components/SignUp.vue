@@ -49,7 +49,6 @@ export default {
     selectOption(option) {
       this.selectedOption = option;
       this.isDropdownOpen = false;
-      // this.$set(this.form, 'role', option);
       this.register('role', { value: option })
     },
     togglePasswordVisibility() {
@@ -60,54 +59,38 @@ export default {
       this.showConfirmPassword = !this.showConfirmPassword;
       this.confirmPasswordInputType = this.showConfirmPassword ? 'text' : 'password';
     },
-    // async onSubmit(data) {
-    //   this.$store.dispatch('openModal')
-    //   try {
-    //     const response = await axios.post('http://localhost:5000/api/user/create', {
-    //       name: data.name.el._value,
-    //       email: data.email.el._value,
-    //       role: this.selectedOption.value,
-    //       password: data.password.el._value,
-    //     });
-    //     this.toast.success(String(response.message));
-
-    //     // Redirect or perform other actions upon successful login
-    //   } catch (error) {
-    //     this.toast.error(String(error));
-    //   }
-    // },
     async onSubmit(data) {
-  try {
-    // Dispatch the action to set the user state
-    this.$store.dispatch('user/setUser', {
-      name: data.name.el._value,
-      email: data.email.el._value,
-      role: data.role.inputValue._value,
-      password: data.password.el._value,
-    });
-    this.$store.dispatch('openModal');
+      try {
+        // Dispatch the action to set the user state
+        this.$store.dispatch('user/setUser', {
+          name: data.name.el._value,
+          email: data.email.el._value,
+          role: data.role.inputValue._value,
+          password: data.password.el._value,
+        });
+        this.$store.dispatch('openModal');
 
-    const response = await axios.post('http://localhost:5000/api/user/create', {
-      name: data.name.el._value,
-      email: data.email.el._value,
-      role: data.role.inputValue._value,
-      password: data.password.el._value,
-    });
+        const response = await axios.post('http://localhost:5000/api/user/create', {
+          name: data.name.el._value,
+          email: data.email.el._value,
+          role: data.role.inputValue._value,
+          password: data.password.el._value,
+        });
 
-    const responseOtp = await axios.post('http://localhost:5000/api/otp', {
-      email: data.email.el._value,
-    });
-    this.toast.success(String(responseOtp.data.message))
-    // Check if OTP state is not empty
-    if (this.$store.getters['getOtp']) {
-      this.toast.success(String(response.data.message))
-    } else {
-      this.toast.error("Verify your account")
-    }
-  } catch (error) {
-    this.toast.error(String(error));
-  }
-},
+        const responseOtp = await axios.post('http://localhost:5000/api/otp', {
+          email: data.email.el._value,
+        });
+        this.toast.success(String(responseOtp.data.message))
+        // Check if OTP state is not empty
+        if (this.$store.getters['getOtp']) {
+          this.toast.success(String(response.data.message))
+        } else {
+          this.toast.error("Verify your account")
+        }
+      } catch (error) {
+        this.toast.error(String(error));
+      }
+    },
   },
   components: {
     OTPView,
