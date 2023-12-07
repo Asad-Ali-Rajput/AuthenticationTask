@@ -1,15 +1,38 @@
-<script setup>
-import { ref, reactive, computed } from 'vue'
+<!-- <script setup>
+import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
+import { useToast } from 'vue-toastification'
+import axios from 'axios'
 
+const toast = useToast()
 const store = useStore()
-const isModalOpen = computed(() => store.state.isOpenModal)
+const otpValue = ref('')
 
-const closeModal = () => {
-  store.commit('closeModal')
-  otpValue.value = ref('')
-}
+// const closeModal = () => {
+//     store.commit('closeModal')
+//     otpValue.value = ref('')
+// }
 
+const closeModal = async () => {
+  try {
+    store.dispatch('setOtp', otpValue);
+    if (!otpValue.value.trim()) {
+      toast.error("OTP is empty. Please provide a valid OTP.");
+      return
+    }
+    const userEmail = store.getters['user/getUser'].email;
+    const response = await axios.post('http://localhost:5000/api/verifyOtp', {
+        otp: otpValue.value,
+        email: userEmail,
+    })
+    store.commit('closeModal')
+    otpValue.value = ref('')
+    toast.success(String(response.data.message))
+
+  } catch (error) {
+    toast.error(String(error))
+  }
+};
 
 const props = defineProps({
     default: String,
@@ -34,8 +57,6 @@ if (props.default && props.default.length === props.digitCount) {
 
 const otpCont = ref(null)
 
-const emit = defineEmits(['update:otp']);
-
 const isDigitsFull = function () {
     for (const elem of digits) {
         if (elem == null || elem == undefined) {
@@ -46,7 +67,7 @@ const isDigitsFull = function () {
     return true;
 }
 
-const handleKeyDown = function (event, index) {
+const handleKeyDown = async function (event, index) {
     if (event.key !== "Tab" &&
         event.key !== "ArrowRight" &&
         event.key !== "ArrowLeft"
@@ -57,8 +78,9 @@ const handleKeyDown = function (event, index) {
     if (event.key === "Backspace") {
         digits[index] = null;
 
-        if (index != 0) {
-            (otpCont.value.children)[index - 1].focus();
+        if (index !== 0) {
+            const otpConts = otpCont.value.children[2].children
+            otpConts[index - 1].focus();
         }
 
         return;
@@ -67,48 +89,129 @@ const handleKeyDown = function (event, index) {
     if ((new RegExp('^([0-9])$')).test(event.key)) {
         digits[index] = event.key;
 
-        if (index != props.digitCount - 1) {
-            (otpCont.value.children)[index + 1].focus();
+        if (index !== props.digitCount - 1) {
+            const otpConts = otpCont.value.children[2].children
+            otpConts[index + 1].focus();
         }
-    }
-    if (isDigitsFull()) {
-        emit('update:otp', digits.join(''))
+        if (isDigitsFull()) {
+            otpValue.value = digits.join('')
+        }
     }
 }
 
+</script> -->
+
+<script>
+import { useStore } from 'vuex'
+import { useToast } from 'vue-toastification'
+import axios from 'axios'
+
+export default {
+    props: {
+        default: String,
+        digitCount: {
+            type: Number,
+            required: true
+        }
+    },
+    setup() {
+        const otpCont = null
+        return{ otpCont }
+    },
+    data() {
+        return {
+            toast: useToast(),
+            otpValue: '',
+            digits: [],
+            // otpCont: null
+        };
+    },
+    methods: {
+        closeModal: async function () {
+            try {
+                this.$store.dispatch('setOtp', this.otpValue)
+                if (!this.otpValue.trim()) {
+                    this.toast.error("OTP is empty. Please provide a valid OTP.")
+                    return
+                }
+
+                const userEmail = this.$store.getters['user/getUser'].email
+                const response = await axios.post('http://localhost:5000/api/verifyOtp', {
+                    otp: this.otpValue,
+                    email: userEmail,
+                })
+
+                store.commit('closeModal')
+                this.otpValue = ''
+                this.toast.success(String(response.data.message))
+            } catch (error) {
+                this.toast.error(String(error))
+            }
+        },
+        isDigitsFull: function () {
+            return this.digits.every(elem => elem !== null && elem !== undefined)
+        },
+        handleKeyDown: async function (event, index) {
+            if (event.key !== "Tab" &&
+                event.key !== "ArrowRight" &&
+                event.key !== "ArrowLeft"
+            ) {
+                event.preventDefault()
+            }
+
+            if (event.key === "Backspace") {
+                this.digits[index] = null
+
+                if (index !== 0) {
+                    console.log(this.otpCont)
+                    const otpConts = this.otpCont.children[2].children
+                    otpConts[index - 1].focus()
+                }
+
+                return
+            }
+
+            if ((new RegExp('^([0-9])$')).test(event.key)) {
+                this.digits[index] = event.key
+
+                if (index !== this.digitCount - 1) {
+                    console.log("this.otpCont",this.otpCont)
+                    const otpConts = this.otpCont.children[2].children
+                    otpConts[index + 1].focus()
+                }
+                if (this.isDigitsFull()) {
+                    this.otpValue = this.digits.join('')
+                }
+            }
+        }
+    },
+    mounted() {
+        if (this.default && this.default.length === this.digitCount) {
+            for (let i = 0; i < this.digitCount; i++) {
+                this.digits[i] = this.default.charAt(i)
+            }
+        } else {
+            this.digits = Array(this.digitCount).fill(null)
+        }
+    }
+}
 </script>
+
 <template>
     <div class="text-center" ref="otpCont">
         <div class="flex justify-center items-center px-5 text-lg font-semibold">
             <h1 class="w-3/6 text-center">Please enter one-time password to verify your account</h1>
         </div>
-    <h2 class="py-4 text-lg text-gray-500">A code has been sent to your email address</h2>
-    <div class="flex justify-center items-center w-full">
-        <div v-for="(el, ind) in digits" :key="el + ind" class="flex justify-center items-center">
-            <input type="text" class="digit-box" v-model="digits[ind]"
-                :autofocus="ind === 0" maxlength="1" @keydown="handleKeyDown($event, ind)">
-            <!-- Add a conditional rendering to show dash after each input, except for the last one -->
-            <span class="w-8 h-8 text-slate-400 text-center text-xl font-extrabold" v-if="ind < digits.length - 1">-</span>
+        <h2 class="py-4 text-lg text-gray-500">A code has been sent to your email address</h2>
+        <div class="flex justify-center items-center w-full">
+            <input type="text"
+                class="h-[4rem] w-[4rem] border-2 border-gray-500 inline-block rounded-lg text-[3rem] p-4 m-2 focus:border-2 focus:border-violet-500 focus:outline-2 focus:outline-violet-500"
+                v-for="(el, ind) in digits" :key="el + ind" v-model="digits[ind]" :autofocus="ind === 0" maxlength="1"
+                @keydown="handleKeyDown($event, ind)">
         </div>
+        <button type="button"
+            class="focus:outline-none font-extrabold text-white bg-[#ff004f] hover:bg-[#cc0041] focus:ring-4 focus:ring-[#ff80a8] rounded-lg text-sm px-10 py-3 my-5 me-2 mb-2"
+            @click="closeModal">Validate</button>
+        <h3 class="text-gray-500 py-4">Didn't get the code? <button class="text-[#9061F9]">Resend</button></h3>
     </div>
-    <button type="button" class="focus:outline-none font-extrabold text-white bg-[#ff004f] hover:bg-[#cc0041] focus:ring-4 focus:ring-[#ff80a8] rounded-lg text-sm px-10 py-3 my-5 me-2 mb-2" @click="closeModal">Validate</button>
-    <h3 class="text-gray-500 py-4">Didn't get the code? <button class="text-[#9061F9]">Resend</button></h3>
-</div>
 </template>
-<style scoped>
-.digit-box {
-    height: 4rem;
-    width: 4rem;
-    border: 2px solid gray;
-    display: inline-block;
-    border-radius: 5px;
-    margin: 5px;
-    padding: 15px;
-    font-size: 3rem;
-}
-
-.digit-box:focus {
-    border: 2px solid #9061F9;
-    outline: 3px solid #9061F9;
-}
-</style>
