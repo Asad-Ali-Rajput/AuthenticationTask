@@ -1,10 +1,9 @@
 <script>
 import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
-import { useForm, createSubmitHandler } from 'vue-use-form'
+import { useForm } from 'vue-use-form'
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification'
 import axios from 'axios'
-import { useStore } from 'vuex'
 
 export default {
 
@@ -35,27 +34,7 @@ export default {
       this.showPassword = !this.showPassword;
       this.passwordInputType = this.showPassword ? 'text' : 'password';
     },
-    // async onSubmit(data) {
-    //   try {
-    //     const response = await axios.post('http://localhost:5000/api/user/login', {
-    //       email: data.email,
-    //       password: data.password,
-    //     });
-    //     const { token, refreshToken } = response.data;
-    //     // Store the tokens in store's state for later use
-    //     this.$store.dispatch('login', {
-    //       accessToken: token,
-    //       refreshToken: refreshToken,
-    //     });
-    //     // Redirect or perform other actions upon successful login
-    //     this.route.push('/profile');
-    //   } catch (error) {
-    //     this.toast.error(String(error))
-    //   }
-    // },
-  },
-  setup() {
-    const onSubmit = createSubmitHandler( async (data) => {
+    async onSubmit(data) {
       try {
         const response = await axios.post('http://localhost:5000/api/user/login', {
           email: data.email,
@@ -72,16 +51,15 @@ export default {
       } catch (error) {
         this.toast.error(String(error))
       }
-    })
-    return { onSubmit }
-  }
+    },
+  },
 }
 </script>
 
 <template>
   <div class="w-full h-full flex">
     <div class="w-1/2 flex justify-center items-center">
-      <form class="w-[70%]" @submit.prevent="() => handleSubmit(onSubmit)">
+      <form class="w-[70%]" @submit.prevent="() => handleSubmit(onSubmit)()">
         <h1 class="text-2xl font-semibold font-sans">Sign In</h1>
         <p class="text-gray-400">Enter your email and password to sign in</p>
         <div>
