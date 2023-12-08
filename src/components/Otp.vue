@@ -134,7 +134,7 @@ export default {
                 }
 
                 const userEmail = this.$store.getters['user/getUser'].email
-                const response = await axios.post('http://localhost:5000/api/verifyOtp', {
+                const response = await axios.post('http://localhost:5000/api/verify-otp', {
                     otp: this.otpValue,
                     email: userEmail,
                 })
