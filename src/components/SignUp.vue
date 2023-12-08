@@ -26,6 +26,9 @@ export default {
       passwordInputType: 'password',
       showConfirmPassword: false,
       confirmPasswordInputType: 'password',
+      password: '',
+      passwordCheck: '',
+      passwordError: '',
       isDropdownOpen: false,
       selectedOption: null,
       hoveredOption: null,
@@ -38,59 +41,82 @@ export default {
     isModalOpen() {
       return this.$store._state.data.isOpenModal
     },
+    passwordMatch() {
+      return this.password === this.passwordCheck
+    },
+  },
+  watch: {
+    // 'password'(newValue) {
+    //   // Watch for changes in the password field
+    //   this.validatePasswordConfirmation(newValue)
+    // },
+    'passwordCheck'(newValue) {
+      // Watch for changes in the passwordCheck field
+      this.validatePasswordConfirmation(newValue)
+    },
   },
   methods: {
     toggleDropdown() {
-      this.isDropdownOpen = !this.isDropdownOpen;
+      this.isDropdownOpen = !this.isDropdownOpen
     },
     closeDropdown() {
       this.isDropdownOpen = false;
     },
     selectOption(option) {
-      this.selectedOption = option;
-      this.isDropdownOpen = false;
+      this.selectedOption = option
+      this.isDropdownOpen = false
       this.register('role', { value: option })
     },
     togglePasswordVisibility() {
       this.showPassword = !this.showPassword;
-      this.passwordInputType = this.showPassword ? 'text' : 'password';
+      this.passwordInputType = this.showPassword ? 'text' : 'password'
     },
     toggleConfirmPasswordVisibility() {
       this.showConfirmPassword = !this.showConfirmPassword;
-      this.confirmPasswordInputType = this.showConfirmPassword ? 'text' : 'password';
+      this.confirmPasswordInputType = this.showConfirmPassword ? 'text' : 'password'
+    },
+    validatePasswordConfirmation(passwordCheck) {
+      if (this.password !== passwordCheck) {
+        this.passwordError = 'Password does not match';
+      } else {
+        this.passwordError = 'Password Matched';
+      }
     },
     async onSubmit(data) {
       try {
+        const response = await axios.post('http://localhost:5000/api/user/create', {
+          name: data.name.el._value,
+          email: data.email.el._value,
+          role: data.role.inputValue._value,
+          password: data.password.el._value,
+        })
+
         // Dispatch the action to set the user state
         this.$store.dispatch('user/setUser', {
           name: data.name.el._value,
           email: data.email.el._value,
           role: data.role.inputValue._value,
           password: data.password.el._value,
-        });
-        this.$store.dispatch('openModal');
-
-        const response = await axios.post('http://localhost:5000/api/user/create', {
-          name: data.name.el._value,
-          email: data.email.el._value,
-          role: data.role.inputValue._value,
-          password: data.password.el._value,
-        });
+        })
+        this.$store.dispatch('openModal')
 
         const responseOtp = await axios.post('http://localhost:5000/api/otp', {
           email: data.email.el._value,
-        });
+        })
         this.toast.success(String(responseOtp.data.message))
         // Check if OTP state is not empty
         if (this.$store.getters['getOtp']) {
           this.toast.success(String(response.data.message))
         } else {
-          this.toast.error("Verify your account")
+          // this.toast.error("Verify your account")
         }
       } catch (error) {
-        this.toast.error(String(error));
+        this.toast.error(String(error))
       }
     },
+    onError(errors) {
+      console.log(errors)
+    }
   },
   components: {
     OTPView,
@@ -98,21 +124,25 @@ export default {
     EyeSlashIcon,
     ChevronDownIcon
   },
-};
+}
 </script>
 
 <template>
   <div class="w-full h-full flex">
     <div class="w-1/2 flex justify-center items-center">
-      <form class="w-[70%]" @submit.prevent="handleSubmit(onSubmit)()">
+      <form class="w-[70%]" @submit.prevent="handleSubmit(onSubmit, onError)()">
         <h1 class="text-2xl font-semibold font-sans">Sign Up</h1>
         <p class="text-gray-400">Fill out the form to register</p>
         <div>
           <div class="py-6">
-            <input type="text" id="name" name="name"
-              class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
-              placeholder="Full name" required :="register('name', { required: 'fullname cannot be empty' })">
-            <span v-if="errors.name">{{ errors.name }}</span>
+            <div class="pb-4">
+              <input type="text" id="name" name="name"
+                class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
+                placeholder="Full name" v-model="name"
+                v-bind="register('name', { required: 'Name field cannot be empty!' })">
+              <span class="text-red-500" v-if="errors.name">{{ errors.name.message }}</span>
+            </div>
+
             <div class="w-full">
               <div class="mb-4 rounded-lg relative inline-block w-full" @mouseleave="closeDropdown()">
                 <div
@@ -127,31 +157,35 @@ export default {
                 </ul>
               </div>
             </div>
-            <span v-if="errors.role">{{ errors.role }}</span>
-            <input type="email" id="email" name="email"
-              class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
-              placeholder="Email" required :="register('email', { required: 'Email field cannot be empty!' })">
-            <span v-if="errors.email">{{ errors.email }}</span>
-            <div class="relative">
-              <input id="password" name="password"
-                class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
-                :type="passwordInputType" placeholder="Password" required
-                :="register('password', { required: 'Password field cannot be empty!' })">
-              <button type="button" class="absolute bottom-2 right-3" @click="togglePasswordVisibility">
-                <span v-if="!showPassword">
-                  <EyeSlashIcon class="h-6 w-6 text-violet-500" />
-                </span>
-                <span v-else>
-                  <EyeIcon class="h-6 w-6 text-violet-500" />
-                </span>
-              </button>
+            <span v-if="!errors.role">{{ errors.role }}</span>
+            <div class="pb-4">
+              <input type="email" id="email" name="email"
+                class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
+                placeholder="Email" v-bind="register('email', { required: 'Email field cannot be empty!' })">
+              <span class="text-red-500" v-if="errors.email">{{ errors.email.message }}</span>
             </div>
-            <span v-if="errors.password">{{ errors.password }}</span>
+            <div class=" pb-4">
+              <div class="relative">
+                <input id="password" name="password"
+                  class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
+                  :type="passwordInputType" placeholder="Password" v-model="password"
+                  v-bind="register('password', { required: 'Password field cannot be empty!' })">
+                <button type="button" class="absolute bottom-2 right-3" @click="togglePasswordVisibility">
+                  <span v-if="!showPassword">
+                    <EyeSlashIcon class="h-6 w-6 text-violet-500" />
+                  </span>
+                  <span v-else>
+                    <EyeIcon class="h-6 w-6 text-violet-500" />
+                  </span>
+                </button>
+              </div>
+              <span class="text-red-500" v-if="errors.password">{{ errors.password.message }}</span>
+            </div>
             <div class="relative">
               <input id="confirmpassword" name="confirmpassword"
                 class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
-                :type="confirmPasswordInputType" placeholder="Confirm password" required
-                :="register('confirmpassword', { required: 'Confirm password field cannot be empty!' })">
+                :type="confirmPasswordInputType" placeholder="Confirm password" v-model="passwordCheck"
+                v-bind="register('confirmpassword', { required: 'Confirm password field cannot be empty!' })">
               <button type="button" class="absolute bottom-2 right-3" @click="toggleConfirmPasswordVisibility">
                 <span v-if="!showConfirmPassword">
                   <EyeSlashIcon class="h-6 w-6 text-violet-500" />
@@ -161,7 +195,9 @@ export default {
                 </span>
               </button>
             </div>
-            <span v-if="errors.confirmpassword">{{ errors.confirmpassword }}</span>
+            <span :class="{ 'text-green-500': passwordMatch, 'text-red-500': !passwordMatch }">
+              {{ passwordCheck ? passwordError : '' }}
+            </span>
           </div>
         </div>
         <button type="submit"
