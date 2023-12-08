@@ -47,7 +47,7 @@ export default {
           refreshToken: refreshToken,
         });
         // Redirect or perform other actions upon successful login
-        this.route.push('/profile')
+        this.route.push('/home')
       } catch (error) {
         this.toast.error(String(error))
       }
