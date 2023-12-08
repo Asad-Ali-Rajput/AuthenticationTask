@@ -1,13 +1,14 @@
 import axios from 'axios'
+import store from '../store';
 
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: 'api',
 })
 
 // Add a request interceptor
 api.interceptors.request.use(
     (config) => {
-        const token = this.$store.getters.getAccessToken;
+        const token = store.getters['getAccessToken'];
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -21,7 +22,7 @@ api.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
-
+        console.log(error)
         // If the error status is 401 and there is no originalRequest._retry flag,
         // it means the token has expired and we need to refresh it
         if (error.response.status === 401 && !originalRequest._retry) {
