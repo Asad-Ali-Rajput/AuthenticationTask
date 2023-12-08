@@ -7,6 +7,7 @@ export default createStore({
     refreshToken: null,
     isOpenModal: false,
     otp: null,
+    product: null,
   },
   mutations: {
     setTokens(state, { accessToken, refreshToken }) {
@@ -29,6 +30,12 @@ export default createStore({
     clearOtp(state) {
       state.otp = null
     },
+    setProduct(state, product) {
+      state.product = product
+    },
+    clearProduct(state) {
+      state.product = null
+    },
   },
   actions: {
     login({ commit }, { accessToken, refreshToken }) {
@@ -49,11 +56,18 @@ export default createStore({
     clearOtp({ commit }) {
       commit('clearOtp')
     },
+    setProduct({ commit }, product) {
+      commit('setProduct', product)
+    },
+    clearProduct({ commit }) {
+      commit('clearProduct')
+    },
   },
   getters: {
     getAccessToken: state => state.accessToken,
     getRefreshToken: state => state.refreshToken,
-    getOtp: state => state.otp, 
+    getOtp: state => state.otp,
+    getProduct: state => state.product, // Getter for the entire product object
   },
   plugins: [createPersistedState()],
   modules: {
