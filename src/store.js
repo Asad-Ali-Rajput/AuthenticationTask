@@ -1,5 +1,8 @@
 import { createStore } from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
+import SecureLS from 'secure-ls'
+
+const secureLS = new SecureLS({ isCompression: false })
 
 export default createStore({
   state: {
@@ -86,7 +89,21 @@ export default createStore({
     getOtp: state => state.otp,
     getProduct: state => state.product, // Getter for the entire product object
   },
-  plugins: [createPersistedState()],
+  plugins: [createPersistedState({
+    key: 'vuex-store',
+    storage: {
+      getItem: key => {
+        const data = secureLS.get(key);
+        return data;
+      },
+      setItem: (key, value) => {
+        secureLS.set(key, value);
+      },
+      removeItem: key => {
+        secureLS.remove(key);
+      },
+    },
+  }),],
   modules: {
     user: {
       namespaced: true,
