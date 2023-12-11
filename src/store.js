@@ -8,8 +8,20 @@ export default createStore({
     isOpenModal: false,
     otp: null,
     product: null,
+    loginInfo: {
+      email: null,
+      _Id: null,
+    },
   },
   mutations: {
+    setLoginInfo(state, { email, _Id }) {
+      state.loginInfo.email = email
+      state.loginInfo._Id = _Id
+    },
+    clearLoginInfo(state) {
+      state.loginInfo.email = null
+      state.loginInfo._Id = null
+    },
     setTokens(state, { accessToken, refreshToken }) {
       state.accessToken = accessToken
       state.refreshToken = refreshToken
@@ -38,10 +50,14 @@ export default createStore({
     },
   },
   actions: {
+    setLoginInfo({ commit }, { email, _Id }) {
+      commit('setLoginInfo', { email, _Id })
+    },
     login({ commit }, { accessToken, refreshToken }) {
       commit('setTokens', { accessToken, refreshToken })
     },
     logout({ commit }) {
+      commit('clearLoginInfo')
       commit('clearTokens')
     },
     openModal({ commit }) {
@@ -64,6 +80,7 @@ export default createStore({
     },
   },
   getters: {
+    getLoginInfo: state => state.loginInfo,
     getAccessToken: state => state.accessToken,
     getRefreshToken: state => state.refreshToken,
     getOtp: state => state.otp,
