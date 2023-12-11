@@ -46,7 +46,8 @@
                             placeholder="" required />
                     </div>
                     <div class="relative">
-                        <label for="orignalPrice" class="block mt-2 text-sm font-medium text-gray-900 dark:text-white">Orignal
+                        <label for="orignalPrice"
+                            class="block mt-2 text-sm font-medium text-gray-900 dark:text-white">Orignal
                             Price</label>
                         <span class="absolute inset-y-0 left-0 top-[1.1rem] flex items-center pl-2">
                             {{ unit }}
@@ -63,7 +64,8 @@
                             required>
                     </div>
                     <div class="">
-                        <label for="quantity" class="block mt-2 text-sm font-medium text-gray-900 dark:text-white">Quantity</label>
+                        <label for="quantity"
+                            class="block mt-2 text-sm font-medium text-gray-900 dark:text-white">Quantity</label>
                         <input type="number" id="quantity" :value="quantity"
                             class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500"
                             required>
@@ -90,6 +92,7 @@
 <script>
 import api from './Api'
 import { useToast } from 'vue-toastification'
+import sanitizeHtml from 'sanitize-html'
 export default {
     data() {
         return {
@@ -106,6 +109,7 @@ export default {
             type: null,
             quantity: null,
             delivery: null,
+            sanitized: null,
         }
     },
     methods: {
@@ -141,16 +145,15 @@ export default {
         const product = this.$store.getters['getProduct'];
 
         if (product) {
-            this.title = product.title;
-            this.description = product.description;
-            this.category = product.category;
-            this.status = product.status;
-            this.price = product.price;
-            this.unit = product.unit;
-            this.createdBy = product.createdBy.name;
-            this.type = product.type;
-            this.quantity = product.quantity;
-            this.delivery = product.delivery.type;
+            this.description = sanitizeHtml(product.description, { allowedTags: [], allowedAttributes: {} })
+            this.category = product.category
+            this.status = product.status
+            this.price = product.price
+            this.unit = product.unit
+            this.createdBy = product.createdBy.name
+            this.type = product.type
+            this.quantity = product.quantity
+            this.delivery = product.delivery.type
             this.originalPrice = product.originalPrice
 
             console.log(this.title, this.description, this.category, this.status, this.price, this.unit, this.createdBy, this.type, this.quantity, this.delivery);
