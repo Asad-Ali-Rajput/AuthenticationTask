@@ -16,6 +16,7 @@
     "dompurify": "^3.0.6",
     "jwt-decode": "^4.0.0",
     "sanitize-html": "^2.11.0",
+    "secure-ls": "^1.2.6",
     "vue-jwt-decode": "^0.1.0",
     "vue-router": "^4.2.5",
     "vue-toastification": "^2.0.0-rc.5",
