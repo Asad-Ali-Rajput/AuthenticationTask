@@ -128,9 +128,9 @@ export default {
             // Call API with updated state (Replace the following line with your actual API call)
             this.callApi(this.$store.getters['getProduct'])
         },
-        async callApi() {
+        async callApi(product) {
             try {
-                const response = await api.get(`http://localhost:5000/api/product/${product._id}`)
+                const response = await api.put(`http://localhost:5000/api/product/${product._id}`)
                 this.toast.success(String(response.data.message))
             } catch (error) {
                 this.toast.error(String(error))
