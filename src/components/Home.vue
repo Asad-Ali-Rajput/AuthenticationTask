@@ -73,7 +73,7 @@ export default {
 </script>
 
 <template>
-  <div class="">
+  <div class="w-full h-full">
     <div class="w-full flex justify-end items-center px-4 py-4">
       <button type="button"
         class="text-white bg-violet-700 hover:bg-violet-800 focus:ring-4 focus:outline-none focus:ring-violet-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800"
@@ -95,7 +95,6 @@ export default {
           <th scope="col" class="px-6 py-3">Category</th>
           <th scope="col" class="px-6 py-3">Status</th>
           <th scope="col" class="px-6 py-3">Price</th>
-          <th scope="col" class="px-6 py-3">Unit</th>
           <th scope="col" class="px-6 py-3">Created By</th>
           <th scope="col" class="px-6 py-3">Type</th>
           <th scope="col" class="px-6 py-3">Quantity</th>
@@ -110,15 +109,14 @@ export default {
             <img :src="item.photo" alt="Product Photo" class="w-12 h-12 object-cover rounded" />
           </td>
           <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.title }}</td>
-          <td class="px-6 py-4 whitespace-pre-line w-48" @click="handleRowClick(item)">{{ item.description }}</td>
+          <td class="px-6 py-4 whitespace-pre-line w-48" @click="handleRowClick(item)" v-html="item.description"></td>
           <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.category }}</td>
           <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.status }}</td>
-          <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.unit }}" "{{ item.price }}</td>
-          <td class="px-6 py-4" @click="handleRowClick(item)"></td>
+          <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.unit }}{{ item.price }}</td>
           <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.createdBy.name }}</td>
           <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.type }}</td>
           <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.quantity }}</td>
-          <td class="px-6 py-4" @click="handleRowClick(item)">{{ item?.delivery?.type }}</td>
+          <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.delivery?.type ? item.delivery.type : item.delivery?.charges }}</td>
           <td class="px-6 py-4">
             <button @click="handleDeleteClick(index)" class="text-red-600">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
