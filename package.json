@@ -9,9 +9,12 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.0.18",
+    "@types/jwt-decode": "^3.1.0",
     "@vue-hero-icons/outline": "^1.7.2",
     "ant-design-vue": "^4.0.7",
     "axios": "^1.6.2",
+    "jwt-decode": "^4.0.0",
+    "vue-jwt-decode": "^0.1.0",
     "vue-router": "^4.2.5",
     "vue-toastification": "^2.0.0-rc.5",
     "vue-use-form": "^0.1.3",
