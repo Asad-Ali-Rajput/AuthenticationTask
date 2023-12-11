@@ -3,6 +3,7 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
 import { useForm } from 'vue-use-form'
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification'
+import VueJwtDecode from 'vue-jwt-decode'
 import axios from 'axios'
 
 export default {
@@ -40,12 +41,21 @@ export default {
           email: data.email.el._value,
           password: data.password.el._value,
         });
-        const { token, refreshToken } = response.data;
+        const { token, refreshToken } = response.data
+
+        const decodedToken = VueJwtDecode.decode(token)
+        const userEmail = decodedToken.email
+        const userId = decodedToken.userId
+        this.$store.dispatch('setLoginInfo', {
+          email: userEmail,
+          _Id: userId,
+        })
+        this.$store.getters['getLoginInfo']
         // Store the tokens in store's state for later use
         this.$store.dispatch('login', {
           accessToken: token,
           refreshToken: refreshToken,
-        });
+        })
         // Redirect or perform other actions upon successful login
         this.route.push('/home')
       } catch (error) {
