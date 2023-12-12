@@ -36,15 +36,15 @@ export default {
         okText: 'Yes',
         okType: 'danger',
         cancelText: 'No',
-        onOk() {
-          this.callApi(index)
+        onOk: () => {
+          this.callDelete(index)
         },
         onCancel() {
-          console.log('Cancel');
+          console.log('Cancel')
         },
       });
     },
-    async callApi(product_id) {
+    async callDelete(product_id) {
       try {
         const response = await api.delete(`http://localhost:5000/api/product/${product_id}`)
         this.toast.success(String(response.data.message))
@@ -118,7 +118,7 @@ export default {
           <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.quantity }}</td>
           <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.delivery?.type ? item.delivery.type : item.delivery?.charges }}</td>
           <td class="px-6 py-4">
-            <button @click="handleDeleteClick(index)" class="text-red-600">
+            <button @click="handleDeleteClick(item._id)" class="text-red-600">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                 class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
