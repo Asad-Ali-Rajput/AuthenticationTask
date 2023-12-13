@@ -11,11 +11,6 @@ const router = createRouter({
       component: SignInView
     },
     {
-      path: '/:catchAll(.*)', // Wildcard route
-      name: 'notFound',
-      component: () => import('../views/ErrorView.vue')
-    },
-    {
       path: '/signup',
       name: 'signup',
       // route level code-splitting
@@ -42,7 +37,12 @@ const router = createRouter({
       name: 'addProduct',
       component: () => import('../views/AddProductView.vue'),
       props: true
-    }
+    },
+    {
+      path: '/:pathMatch(.*)*', // Wildcard route
+      name: 'notFound',
+      component: () => import('../views/ErrorView.vue')
+    },
   ]
 })
 
@@ -54,16 +54,22 @@ router.beforeEach((to, from, next) => {
 
   if (!isAuthenticated) return next({ name: 'login' })
 
+  
+
   if (to.name !== 'home') return next()
 
   if (from.name === 'home' && to.name !== 'home' && to.params.productId) return next({ name: 'editProduct' })
 
   if (from.name === 'home' && to.name !== 'home' && to.params.str) return next({ name: 'addProduct' })
 
+  // const isValidRoute = router.hasRoute(to.name)
+  // console.log("isValid", isValidRoute, to.name)
+  if (!router.hasRoute(to.name)) return next({ name: 'notFound' })
+
   // if ((from.name === 'login' || from.name === 'signup') && to.name === 'addProduct' && to.params.str) return next({ name: from.name })
 
   // if ((from.name === 'login' || from.name === 'signup') && to.name === 'editProduct' && to.params.productId) return next({ name: from.name })
-  next({ name: 'notFound' })
+  next()
 
 })
 
