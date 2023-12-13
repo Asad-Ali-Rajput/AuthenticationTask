@@ -11,6 +11,11 @@ const router = createRouter({
       component: SignInView
     },
     {
+      path: '/:catchAll(.*)', // Wildcard route
+      name: 'notFound',
+      component: () => import('../views/ErrorView.vue')
+    },
+    {
       path: '/signup',
       name: 'signup',
       // route level code-splitting
@@ -54,8 +59,12 @@ router.beforeEach((to, from, next) => {
   if (from.name === 'home' && to.name !== 'home' && to.params.productId) return next({ name: 'editProduct' })
 
   if (from.name === 'home' && to.name !== 'home' && to.params.str) return next({ name: 'addProduct' })
-  next()
-  
+
+  // if ((from.name === 'login' || from.name === 'signup') && to.name === 'addProduct' && to.params.str) return next({ name: from.name })
+
+  // if ((from.name === 'login' || from.name === 'signup') && to.name === 'editProduct' && to.params.productId) return next({ name: from.name })
+  next({ name: 'notFound' })
+
 })
 
 export default router
