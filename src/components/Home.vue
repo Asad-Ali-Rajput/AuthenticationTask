@@ -25,7 +25,7 @@ export default {
     handleRowClick(item) {
       // console.log("Row Clicked:", item)
       this.$store.dispatch('setProduct', item)
-      this.route.push('/editProduct')
+      this.route.push({ name: 'editProduct', params: { productId: item._id } })
     },
     handleDeleteClick(index) {
       // console.log("Delete Clicked for row index:", index)
@@ -53,7 +53,7 @@ export default {
       }
     },
     handleAddProduct() {
-      this.route.push('/addProduct')
+      this.route.push({ name: 'addProduct', params: { str: 'add' } })
     }
   },
   created() {
