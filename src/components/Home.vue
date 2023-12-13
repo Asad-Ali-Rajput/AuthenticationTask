@@ -89,17 +89,17 @@ export default {
     <table class="text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
-          <th scope="col" class="px-6 py-3">Photo</th>
-          <th scope="col" class="px-6 py-3">Title</th>
-          <th scope="col" class="px-6 py-3">Description</th>
-          <th scope="col" class="px-6 py-3">Category</th>
-          <th scope="col" class="px-6 py-3">Status</th>
-          <th scope="col" class="px-6 py-3">Price</th>
-          <th scope="col" class="px-6 py-3">Created By</th>
-          <th scope="col" class="px-6 py-3">Type</th>
-          <th scope="col" class="px-6 py-3">Quantity</th>
-          <th scope="col" class="px-6 py-3">Delivery</th>
-          <th scope="col" class="px-6 py-3"></th>
+          <th scope="col" class="px-6 py-3 w-[7rem]">Photo</th>
+          <th scope="col" class="px-6 py-3 w-[10rem]">Title</th>
+          <th scope="col" class="px-6 py-3 w-[25rem]">Description</th>
+          <th scope="col" class="px-6 py-3 w-[6rem]">Category</th>
+          <th scope="col" class="px-6 py-3 w-[6rem]">Status</th>
+          <th scope="col" class="px-6 py-3 w-[6rem]">Price</th>
+          <th scope="col" class="px-6 py-3 w-[10rem]">Created By</th>
+          <th scope="col" class="px-6 py-3 w-[6rem]">Type</th>
+          <th scope="col" class="px-6 py-3 w-[6rem]">Quantity</th>
+          <th scope="col" class="px-6 py-3 w-[6rem]">Delivery</th>
+          <th scope="col" class="px-6 py-3 w-[rem]"></th>
         </tr>
       </thead>
       <tbody>
