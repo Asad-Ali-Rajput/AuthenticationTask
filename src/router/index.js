@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import SignInView from '../views/SignInView.vue'
+import store from '../store'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,22 +27,35 @@ const router = createRouter({
       component: () => import('../views/ProductView.vue')
     },
     {
-      path: '/editProduct',
+      path: '/editProduct/:productId',
       name: 'editProduct',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/ProductDetails.vue')
+      component: () => import('../views/ProductDetails.vue'),
+      props: true
     },
     {
-      path: '/addProduct',
+      path: '/addProduct/:str',
       name: 'addProduct',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AddProductView.vue')
+      component: () => import('../views/AddProductView.vue'),
+      props: true
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.name === 'login' || to.name === 'signup') return next()
+
+  const accessToken = store.getters.getAccessToken
+  const isAuthenticated = accessToken !== null && accessToken !== undefined
+
+  if (!isAuthenticated) return next({ name: 'login' })
+
+  if (to.name !== 'home') return next()
+
+  if (from.name === 'home' && to.name !== 'home' && to.params.productId) return next({ name: 'editProduct' })
+
+  if (from.name === 'home' && to.name !== 'home' && to.params.str) return next({ name: 'addProduct' })
+  next()
+  
 })
 
 export default router
