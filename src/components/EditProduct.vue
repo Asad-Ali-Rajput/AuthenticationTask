@@ -157,7 +157,7 @@ export default {
             this.delivery = product.delivery
             this.originalPrice = product.originalPrice
 
-            console.log(this.title, this.description, this.category, this.status, this.price, this.unit, this.createdBy, this.type, this.quantity, this.delivery)
+            // console.log(this.title, this.description, this.category, this.status, this.price, this.unit, this.createdBy, this.type, this.quantity, this.delivery)
         }
     }
 }
