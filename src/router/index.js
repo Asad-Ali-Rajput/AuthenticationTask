@@ -51,8 +51,6 @@ router.beforeEach((to, from, next) => {
 
   if (!isAuthenticated) return next({ name: 'login' })
 
-  
-
   if (to.name !== 'home') return next()
 
   if (from.name === 'home' && to.name === 'editProduct' && to.params.productId) return next({ name: 'editProduct' })
