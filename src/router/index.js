@@ -64,9 +64,6 @@ router.beforeEach((to, from, next) => {
 
   if (!router.hasRoute(to.name)) return next({ name: 'notFound' })
 
-  // if ((from.name === 'login' || from.name === 'signup') && to.name === 'addProduct' && to.params.str) return next({ name: from.name })
-
-  // if ((from.name === 'login' || from.name === 'signup') && to.name === 'editProduct' && to.params.productId) return next({ name: from.name })
   next()
 
 })
