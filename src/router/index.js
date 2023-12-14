@@ -58,9 +58,9 @@ router.beforeEach((to, from, next) => {
 
   if (to.name !== 'home') return next()
 
-  if (from.name === 'home' && to.name !== 'home' && to.params.productId) return next({ name: 'editProduct' })
+  if (from.name === 'home' && to.name === 'editProduct' && to.params.productId) return next({ name: 'editProduct' })
 
-  if (from.name === 'home' && to.name !== 'home' && to.params.str) return next({ name: 'addProduct' })
+  if (from.name === 'home' && to.name === 'addProduct' && to.params.str) return next({ name: 'addProduct' })
 
   // const isValidRoute = router.hasRoute(to.name)
   // console.log("isValid", isValidRoute, to.name)
