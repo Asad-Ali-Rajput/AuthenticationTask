@@ -13,17 +13,17 @@ export default createStore({
     product: null,
     loginInfo: {
       email: null,
-      _Id: null,
+      _id: null,
     },
   },
   mutations: {
-    setLoginInfo(state, { email, _Id }) {
+    setLoginInfo(state, { email, _id }) {
       state.loginInfo.email = email
-      state.loginInfo._Id = _Id
+      state.loginInfo._id = _id
     },
     clearLoginInfo(state) {
       state.loginInfo.email = null
-      state.loginInfo._Id = null
+      state.loginInfo._id = null
     },
     setTokens(state, { accessToken, refreshToken }) {
       state.accessToken = accessToken
@@ -53,8 +53,8 @@ export default createStore({
     },
   },
   actions: {
-    setLoginInfo({ commit }, { email, _Id }) {
-      commit('setLoginInfo', { email, _Id })
+    setLoginInfo({ commit }, { email, _id }) {
+      commit('setLoginInfo', { email, _id })
     },
     login({ commit }, { accessToken, refreshToken }) {
       commit('setTokens', { accessToken, refreshToken })
