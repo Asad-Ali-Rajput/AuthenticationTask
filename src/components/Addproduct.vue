@@ -92,6 +92,7 @@ import api from './Api'
 import { useToast } from 'vue-toastification'
 export default {
     data() {
+        const loginInfo = this.$store.getters['getLoginInfo']
         const product = {
             title: null,
             description: null,
@@ -107,7 +108,7 @@ export default {
                 charges: 0,
                 type: 'free',
             },
-            createdBy: this.$store.getters['getLoginInfo']._id,
+            createdBy: loginInfo._id,
         }
         if (product.delivery.charges !== 0) return product.delivery.type = "paid"
 
@@ -120,9 +121,11 @@ export default {
     },
     methods: {
         async onSubmit() {
+            console.log("product", this.product)
             try {
                 const response = await api.post(`http://localhost:5000/api/product`, this.product)
                 this.toast.success(String(response.data.message))
+                this.$router.go(-1)
             } catch (error) {
                 this.toast.error(String(error))
             }
