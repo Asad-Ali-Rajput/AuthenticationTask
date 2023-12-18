@@ -24,7 +24,7 @@ export default {
     },
     handleRowClick(item) {
       // console.log("Row Clicked:", item)
-      this.$store.dispatch('setProduct', item)
+      this.$store.dispatch('setProduct', item._id)
       this.route.push({ name: 'editProduct', params: { productId: item._id } })
     },
     handleDeleteClick(index) {
@@ -67,7 +67,6 @@ export default {
 
   beforeUnmount() {
     // Clear the interval when the component is destroyed to prevent memory leaks
-    console.log("component destroyed")
     clearInterval(this.fetchedInterval)
   },
 }
