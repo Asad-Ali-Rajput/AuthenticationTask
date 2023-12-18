@@ -48,9 +48,8 @@ export default {
         const userId = decodedToken.userId
         this.$store.dispatch('setLoginInfo', {
           email: userEmail,
-          _Id: userId,
+          _id: userId,
         })
-        this.$store.getters['getLoginInfo']
         // Store the tokens in store's state for later use
         this.$store.dispatch('login', {
           accessToken: token,
