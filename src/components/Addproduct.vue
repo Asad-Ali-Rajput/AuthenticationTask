@@ -107,13 +107,12 @@ export default {
                 charges: 0,
                 type: 'free',
             },
-            createdBy: this.$store.getters['getLoginInfo'],
+            createdBy: this.$store.getters['getLoginInfo']._id,
         }
-        if (product.delivery.charges === 0) {
-            product.delivery.type = "free"
-        } else {
-            product.delivery.type = "paid"
-        }
+        if (product.delivery.charges !== 0) return product.delivery.type = "paid"
+
+        product.delivery.type = "free"
+        product.isSold = product.quantity === 0
         return {
             toast: useToast(),
             product,
