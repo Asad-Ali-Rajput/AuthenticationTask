@@ -65,8 +65,9 @@ export default {
     }, 3000)
   },
 
-  destroyed() {
+  beforeUnmount() {
     // Clear the interval when the component is destroyed to prevent memory leaks
+    console.log("component destroyed")
     clearInterval(this.fetchedInterval)
   },
 }
