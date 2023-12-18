@@ -21,24 +21,24 @@ const router = createRouter({
     {
       path: '/home',
       name: 'home',
-      component: () => import('../views/ProductView.vue')
+      component: () => import('../views/ProductView.vue'),
     },
     {
       path: '/editProduct/:productId',
       name: 'editProduct',
       component: () => import('../views/ProductDetails.vue'),
-      props: true
+      props: true,
     },
     {
       path: '/addProduct/:str',
       name: 'addProduct',
       component: () => import('../views/AddProductView.vue'),
-      props: true
+      props: true,
     },
     {
       path: '/:pathMatch(.*)*', // Wildcard route
       name: 'notFound',
-      component: () => import('../views/ErrorView.vue')
+      component: () => import('../views/ErrorView.vue'),
     },
   ]
 })
