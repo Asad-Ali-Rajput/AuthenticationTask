@@ -1,7 +1,7 @@
 <template>
     <div class="p-4">
 
-        <form>
+        <form @submit.prevent="onSubmit">
             <div class="flex">
                 <div class="w-1/3 pr-4">
                     <img :src="product.photo" alt="product image" class="w-full h-full object-fill rounded-3xl" />
@@ -116,23 +116,25 @@ export default {
         onSubmit() {
             // Update the store state
             this.$store.commit('setProduct', {
+                ...this.$store.state.product,
                 title: this.title,
                 description: this.description,
                 category: this.category,
                 status: this.status,
                 price: this.price,
                 unit: this.unit,
-                createdBy: { name: this.createdBy }, // Assuming createdBy is an object with a 'name' property
+                createdBy: { name: this.createdBy },
                 type: this.type,
                 quantity: this.quantity,
-                delivery: this.delivery, // Assuming delivery is an object with a 'type' property
+                delivery: { ...this.$store.state.product.delivery, type: this.delivery.type },
                 originalPrice: this.originalPrice,
-            });
+            })
 
             // Call API with updated state (Replace the following line with your actual API call)
             this.callApi(this.$store.getters['getProduct'])
         },
         async callApi(product) {
+            console.log(product)
             try {
                 const response = await api.put(`http://localhost:5000/api/product/${product._id}`)
                 this.toast.success(String(response.data.message))
