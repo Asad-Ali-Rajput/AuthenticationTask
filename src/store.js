@@ -10,7 +10,7 @@ export default createStore({
     refreshToken: null,
     isOpenModal: false,
     otp: null,
-    product: null,
+    productId: null,
     loginInfo: {
       email: null,
       _id: null,
@@ -46,10 +46,10 @@ export default createStore({
       state.otp = null
     },
     setProduct(state, product) {
-      state.product = product
+      state.productId = product
     },
     clearProduct(state) {
-      state.product = null
+      state.productId = null
     },
   },
   actions: {
@@ -87,7 +87,7 @@ export default createStore({
     getAccessToken: state => state.accessToken,
     getRefreshToken: state => state.refreshToken,
     getOtp: state => state.otp,
-    getProduct: state => state.product, // Getter for the entire product object
+    getProduct: state => state.productId, // Getter for the entire product object
   },
   plugins: [createPersistedState({
     key: 'vuex-store',
