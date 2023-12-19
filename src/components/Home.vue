@@ -4,20 +4,56 @@ import { useRouter } from 'vue-router'
 import { createVNode } from 'vue'
 import { Modal } from 'ant-design-vue'
 import { DeleteOutlined } from '@ant-design/icons-vue'
+import { ChevronUpDownIcon, FunnelIcon } from '@heroicons/vue/24/outline'
 export default {
+  components: {
+    ChevronUpDownIcon,
+    FunnelIcon,
+  },
   data() {
     return {
       route: useRouter(),
       allProducts: null,
       fetchedInterval: null,
       token: this.$store.getters['getAccessToken'],
+      sortColumn: '', // Track the column for sorting
+      sortOrder: 'desc', // Track the sort order ('asc' or 'desc')
+      showTooltip: {
+        title: false,
+        description: false,
+        category: false,
+        status: false,
+        price: false,
+        createdBy: false,
+        type: false,
+        quantity: false,
+        delivery: false,
+      },
     }
   },
   methods: {
+    sortProducts(column, order) {
+      this.allProducts.sort((a, b) => {
+        const aValue = a[column]
+        const bValue = b[column]
+
+        if (aValue === undefined && bValue === undefined) return 0
+
+        if (typeof aValue !== 'number' && typeof bValue !== 'number') return order === 'asc' ? aValue.toString().localeCompare(bValue.toString()) : bValue.toString().localeCompare(aValue.toString())
+
+        return order === 'asc' ? aValue - bValue : bValue - aValue
+        // if (typeof aValue === 'number' && typeof bValue === 'number') {
+        // } else {
+        // Use localeCompare for string comparison
+        // return order === 'asc' ? aValue.toString().localeCompare(bValue.toString()) : bValue.toString().localeCompare(aValue.toString())
+        // }
+      })
+    },
     async fetchProduct() {
       try {
         const response = await api.get('http://localhost:5000/api/products')
         this.allProducts = response.data
+        this.sortProducts(this.sortColumn, this.sortOrder)
       } catch (error) {
         console.error('Error fetching profile:', error)
       }
@@ -54,7 +90,29 @@ export default {
     },
     handleAddProduct() {
       this.route.push({ name: 'addProduct', params: { str: 'add' } })
+    },
+    handleSort(column) {
+      // Toggle sort order if clicking on the same column
+      console.log("toggle sort")
+      if (this.sortColumn === column) {
+        this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'
+      } else {
+        this.sortColumn = column
+        this.sortOrder = 'asc'
+      }
+      this.sortProducts(this.sortColumn, this.sortOrder)
+    },
+    toggleTooltip(column) {
+    // Close other tooltips
+    // console.log("toggletooltip")
+    for (const key in this.showTooltip) {
+      if (key !== column) {
+        this.showTooltip[key] = false
+      }
     }
+    // Toggle the tooltip for the clicked column
+    this.showTooltip[column] = !this.showTooltip[column]
+  },
   },
   created() {
     this.fetchProduct()
@@ -79,8 +137,7 @@ export default {
         class="text-white bg-violet-700 hover:bg-violet-800 focus:ring-4 focus:outline-none focus:ring-violet-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800"
         @click="handleAddProduct">
         Add Product
-        <svg class="w-3 h-3 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 14 14">
+        <svg class="w-3 h-3 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M7 1v12M1 7h12" />
         </svg>
@@ -90,16 +147,198 @@ export default {
       <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
           <th scope="col" class="px-6 py-3 w-[7rem]">Photo</th>
-          <th scope="col" class="px-6 py-3 w-[10rem]">Title</th>
-          <th scope="col" class="px-6 py-3 w-[25rem]">Description</th>
-          <th scope="col" class="px-6 py-3 w-[6rem]">Category</th>
-          <th scope="col" class="px-6 py-3 w-[6rem]">Status</th>
-          <th scope="col" class="px-6 py-3 w-[6rem]">Price</th>
-          <th scope="col" class="px-6 py-3 w-[10rem]">Created By</th>
-          <th scope="col" class="px-6 py-3 w-[6rem]">Type</th>
-          <th scope="col" class="px-6 py-3 w-[6rem]">Quantity</th>
-          <th scope="col" class="px-6 py-3 w-[6rem]">Delivery</th>
-          <th scope="col" class="px-6 py-3 w-[rem]"></th>
+          <th scope="col" class="px-6 py-3 w-[10rem]">
+            <div class="flex items-center">
+              Title
+              <button class="flex items-center cursor-pointer" @click="handleSort('title')">
+                <ChevronUpDownIcon class="w-4 h-4 mx-1" />
+              </button>
+              <button class="flex items-center cursor-pointer" @click="toggleTooltip('title')">
+                <FunnelIcon class="w-4 h-4" />
+              </button>
+              <div :class="{ 'invisible': !showTooltip.title, 'opacity-100': showTooltip.title }" id="tooltip-dark" role="tooltip"
+                class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
+                <div
+                  class="tooltip-arrow absolute z-10 -top-[1rem] pl-[3.4rem] text-[14px] text-white bg-violet-500 shadow-sm"
+                  data-popper-arrow></div>
+                <div class="w-[20%] h-[5%]">
+                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                    placeholder="Enter something..." />
+                  
+                </div>
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3 w-[25rem]">
+            <div class="flex items-center">
+              Description
+              <button class="flex items-center cursor-pointer" @click="handleSort('description')">
+                <ChevronUpDownIcon class="w-4 h-4 mx-1" />
+              </button>
+              <button class="flex items-center cursor-pointer" @click="toggleTooltip('description')">
+                <FunnelIcon class="w-4 h-4" />
+              </button>
+              <div :class="{ 'invisible': !showTooltip.description, 'opacity-100': showTooltip.description }" id="tooltip-dark" role="tooltip"
+                class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
+                <div
+                  class="tooltip-arrow absolute z-10 -top-[1rem] pl-[6.4rem] text-[14px] text-white bg-violet-500 shadow-sm"
+                  data-popper-arrow></div>
+                <div class="w-[20%] h-[5%]">
+                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                    placeholder="Enter something..." />
+                </div>
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3 w-[6rem]">
+            <div class="flex items-center">
+              Category
+              <button class="flex items-center cursor-pointer" @click="handleSort('category')">
+                <ChevronUpDownIcon class="w-4 h-4 mx-1" />
+              </button>
+              <button class="flex items-center cursor-pointer" @click="toggleTooltip('category')">
+                <FunnelIcon class="w-4 h-4" />
+              </button>
+              <div :class="{ 'invisible': !showTooltip.category, 'opacity-100': showTooltip.category }" id="tooltip-dark" role="tooltip"
+                class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
+                <div
+                  class="tooltip-arrow absolute z-10 -top-[1rem] pl-[5.5rem] text-[14px] text-white bg-violet-500 shadow-sm"
+                  data-popper-arrow></div>
+                <div class="w-[20%] h-[5%]">
+                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                    placeholder="Enter something..." />
+                </div>
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3 w-[6rem]">
+            <div class="flex items-center">
+              Status
+              <button class="flex items-center cursor-pointer" @click="handleSort('status')">
+                <ChevronUpDownIcon class="w-4 h-4 mx-1" />
+              </button>
+              <button class="flex items-center cursor-pointer" @click="toggleTooltip('status')">
+                <FunnelIcon class="w-4 h-4" />
+              </button>
+              <div :class="{ 'invisible': !showTooltip.status, 'opacity-100': showTooltip.status }" id="tooltip-dark" role="tooltip"
+                class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
+                <div
+                  class="tooltip-arrow absolute z-10 -top-[1rem] pl-[4.2rem] text-[14px] text-white bg-violet-500 shadow-sm"
+                  data-popper-arrow></div>
+                <div class="w-[20%] h-[5%]">
+                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                    placeholder="Enter something..." />
+                </div>
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3 w-[6rem]">
+            <div class="flex items-center">
+              Price
+              <button class="flex items-center cursor-pointer" @click="handleSort('price')">
+                <ChevronUpDownIcon class="w-4 h-4 mx-1" />
+              </button>
+              <button class="flex items-center cursor-pointer" @click="toggleTooltip('price')">
+                <FunnelIcon class="w-4 h-4" />
+              </button>
+              <div :class="{ 'invisible': !showTooltip.price, 'opacity-100': showTooltip.price }" id="tooltip-dark" role="tooltip"
+                class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
+                <div
+                  class="tooltip-arrow absolute z-10 -top-[1rem] pl-[3.5rem] text-[14px] text-white bg-violet-500 shadow-sm"
+                  data-popper-arrow></div>
+                <div class="w-[20%] h-[5%]">
+                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                    placeholder="Enter something..." />
+                </div>
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3 w-[22rem]">
+            <div class="flex items-center">
+              Created By
+              <button class="flex items-center cursor-pointer" @click="handleSort('createdBy.name')">
+                <ChevronUpDownIcon class="w-4 h-4 mx-1" />
+              </button>
+              <button class="flex items-center cursor-pointer" @click="toggleTooltip('createdBy')">
+                <FunnelIcon class="w-4 h-4" />
+              </button>
+              <div :class="{ 'invisible': !showTooltip.createdBy, 'opacity-100': showTooltip.createdBy }" id="tooltip-dark" role="tooltip"
+                class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
+                <div
+                  class="tooltip-arrow absolute z-10 -top-[1rem] pl-[6rem] text-[14px] text-white bg-violet-500 shadow-sm"
+                  data-popper-arrow></div>
+                <div class="w-[20%] h-[5%]">
+                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                    placeholder="Enter something..." />
+                </div>
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3 w-[6rem]">
+            <div class="flex items-center">
+              Type
+              <button class="flex items-center cursor-pointer" @click="handleSort('type')">
+                <ChevronUpDownIcon class="w-4 h-4 mx-1" />
+              </button>
+              <button class="flex items-center cursor-pointer" @click="toggleTooltip('type')">
+                <FunnelIcon class="w-4 h-4" />
+              </button>
+              <div :class="{ 'invisible': !showTooltip.type, 'opacity-100': showTooltip.type }" id="tooltip-dark" role="tooltip"
+                class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
+                <div
+                  class="tooltip-arrow absolute z-10 -top-[1rem] pl-[3.3rem] text-[14px] text-white bg-violet-500 shadow-sm"
+                  data-popper-arrow></div>
+                <div class="w-[20%] h-[5%]">
+                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                    placeholder="Enter something..." />
+                </div>
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3 w-[6rem]">
+            <div class="flex items-center">
+              Quantity
+              <button class="flex items-center cursor-pointer" @click="handleSort('quantity')">
+                <ChevronUpDownIcon class="w-4 h-4 mx-1" />
+              </button>
+              <button class="flex items-center cursor-pointer" @click="toggleTooltip('quantity')">
+                <FunnelIcon class="w-4 h-4" />
+              </button>
+              <div :class="{ 'invisible': !showTooltip.quantity, 'opacity-100': showTooltip.quantity }" id="tooltip-dark" role="tooltip"
+                class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
+                <div
+                  class="tooltip-arrow absolute z-10 -top-[1rem] pl-[5.2rem] text-[14px] text-white bg-violet-500 shadow-sm"
+                  data-popper-arrow></div>
+                <div class="w-[20%] h-[5%]">
+                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                    placeholder="Enter something..." />
+                </div>
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3 w-[6rem]">
+            <div class="flex items-center">
+              Delivery
+              <buttondiv class="flex items-center cursor-pointer" @click="handleSort('delivery.charges')">
+                <ChevronUpDownIcon class="w-4 h-4 mx-1" />
+              </buttondiv>
+              <buttondiv class="flex items-center cursor-pointer" @click="toggleTooltip('delivery')">
+                <FunnelIcon class="w-4 h-4" />
+              </buttondiv>
+              <div :class="{ 'invisible': !showTooltip.delivery, 'opacity-100': showTooltip.delivery }" id="tooltip-dark" role="tooltip"
+                class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
+                <div
+                  class="tooltip-arrow absolute z-10 -top-[1rem] pl-[5rem] text-[14px] text-white bg-violet-500 shadow-sm"
+                  data-popper-arrow></div>
+                <div class="w-[20%] h-[5%]">
+                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                    placeholder="Enter something..." />
+                  
+                </div>
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="px-3 py-3"></th>
         </tr>
       </thead>
       <tbody>
@@ -116,8 +355,9 @@ export default {
           <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.createdBy.name }}</td>
           <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.type }}</td>
           <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.quantity }}</td>
-          <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.delivery?.type ? item.delivery.type : item.delivery?.charges }}</td>
-          <td class="px-6 py-4">
+          <td class="px-6 py-4" @click="handleRowClick(item)">{{ item.delivery?.type ? item.delivery.type :
+            item.delivery?.charges }}</td>
+          <td class="px-3 py-4">
             <button @click="handleDeleteClick(item._id)" class="text-red-600">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                 class="w-6 h-6">
@@ -132,5 +372,22 @@ export default {
 </template>
 
 <style scoped>
-/* Add your styles here */
-</style>
+.tooltip-dark {
+  display: none;
+  /* Initially hide the tooltip */
+}
+
+/* Arrow styles */
+.tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.tooltip-arrow[data-popper-arrow]::after {
+  content: '';
+  position: absolute;
+  border-width: 8px;
+  border-color: transparent transparent #9061F9 transparent;
+}</style>
