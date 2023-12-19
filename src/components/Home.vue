@@ -29,6 +29,17 @@ export default {
         quantity: false,
         delivery: false,
       },
+      typedValue: {
+        title: '',
+        description: '',
+        category: '',
+        status: '',
+        price: '',
+        createdBy: '',
+        type: '',
+        quantity: '',
+        delivery: '',
+      },
     }
   },
   methods: {
@@ -52,6 +63,20 @@ export default {
     async fetchProduct() {
       try {
         const response = await api.get('http://localhost:5000/api/products')
+        // Check if any of the typed values are not empty
+        const hasTypedValues = Object.values(this.typedValue).some(value => value.trim() !== '');
+        
+        if (hasTypedValues) {
+          // Filter the products only if there are non-empty typed values
+          for (const column in this.typedValue) {
+            if (this.typedValue[column].trim() !== '') {
+              this.filterProducts(column);
+            }
+          }
+        } else {
+          // If no non-empty typed values, set allProducts to the fetched data
+          this.allProducts = response.data;
+        }
         this.allProducts = response.data
         this.sortProducts(this.sortColumn, this.sortOrder)
       } catch (error) {
@@ -103,16 +128,25 @@ export default {
       this.sortProducts(this.sortColumn, this.sortOrder)
     },
     toggleTooltip(column) {
-    // Close other tooltips
-    // console.log("toggletooltip")
-    for (const key in this.showTooltip) {
-      if (key !== column) {
-        this.showTooltip[key] = false
+      // Close other tooltips
+      // console.log("toggletooltip")
+      for (const key in this.showTooltip) {
+        if (key !== column) {
+          this.showTooltip[key] = false
+        }
       }
-    }
-    // Toggle the tooltip for the clicked column
-    this.showTooltip[column] = !this.showTooltip[column]
-  },
+      // Toggle the tooltip for the clicked column
+      this.showTooltip[column] = !this.showTooltip[column]
+    },
+    handleFilter(column) {
+      const value = this.typedValue[column].toLowerCase()
+
+      // Filter allProducts based on the typed value and column
+      this.allProducts = this.allProducts.filter(product => {
+        const productValue = String(product[column]).toLowerCase()
+        return productValue.includes(value)
+      });
+    },
   },
   created() {
     this.fetchProduct()
@@ -156,15 +190,17 @@ export default {
               <button class="flex items-center cursor-pointer" @click="toggleTooltip('title')">
                 <FunnelIcon class="w-4 h-4" />
               </button>
-              <div :class="{ 'invisible': !showTooltip.title, 'opacity-100': showTooltip.title }" id="tooltip-dark" role="tooltip"
+              <div :class="{ 'invisible': !showTooltip.title, 'opacity-100': showTooltip.title }" id="tooltip-dark"
+                role="tooltip"
                 class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
                 <div
                   class="tooltip-arrow absolute z-10 -top-[1rem] pl-[3.4rem] text-[14px] text-white bg-violet-500 shadow-sm"
                   data-popper-arrow></div>
                 <div class="w-[20%] h-[5%]">
-                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                  <input v-model="typedValue.title" @input="handleFilter('title')"
+                    class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
                     placeholder="Enter something..." />
-                  
+
                 </div>
               </div>
             </div>
@@ -178,13 +214,15 @@ export default {
               <button class="flex items-center cursor-pointer" @click="toggleTooltip('description')">
                 <FunnelIcon class="w-4 h-4" />
               </button>
-              <div :class="{ 'invisible': !showTooltip.description, 'opacity-100': showTooltip.description }" id="tooltip-dark" role="tooltip"
+              <div :class="{ 'invisible': !showTooltip.description, 'opacity-100': showTooltip.description }"
+                id="tooltip-dark" role="tooltip"
                 class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
                 <div
                   class="tooltip-arrow absolute z-10 -top-[1rem] pl-[6.4rem] text-[14px] text-white bg-violet-500 shadow-sm"
                   data-popper-arrow></div>
                 <div class="w-[20%] h-[5%]">
-                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                  <input v-model="typedValue.description" @input="handleFilter('description')"
+                    class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
                     placeholder="Enter something..." />
                 </div>
               </div>
@@ -199,13 +237,15 @@ export default {
               <button class="flex items-center cursor-pointer" @click="toggleTooltip('category')">
                 <FunnelIcon class="w-4 h-4" />
               </button>
-              <div :class="{ 'invisible': !showTooltip.category, 'opacity-100': showTooltip.category }" id="tooltip-dark" role="tooltip"
+              <div :class="{ 'invisible': !showTooltip.category, 'opacity-100': showTooltip.category }" id="tooltip-dark"
+                role="tooltip"
                 class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
                 <div
                   class="tooltip-arrow absolute z-10 -top-[1rem] pl-[5.5rem] text-[14px] text-white bg-violet-500 shadow-sm"
                   data-popper-arrow></div>
                 <div class="w-[20%] h-[5%]">
-                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                  <input v-model="typedValue.category" @input="handleFilter('category')"
+                    class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
                     placeholder="Enter something..." />
                 </div>
               </div>
@@ -220,13 +260,15 @@ export default {
               <button class="flex items-center cursor-pointer" @click="toggleTooltip('status')">
                 <FunnelIcon class="w-4 h-4" />
               </button>
-              <div :class="{ 'invisible': !showTooltip.status, 'opacity-100': showTooltip.status }" id="tooltip-dark" role="tooltip"
+              <div :class="{ 'invisible': !showTooltip.status, 'opacity-100': showTooltip.status }" id="tooltip-dark"
+                role="tooltip"
                 class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
                 <div
                   class="tooltip-arrow absolute z-10 -top-[1rem] pl-[4.2rem] text-[14px] text-white bg-violet-500 shadow-sm"
                   data-popper-arrow></div>
                 <div class="w-[20%] h-[5%]">
-                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                  <input v-model="typedValue.status" @input="handleFilter('status')"
+                    class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
                     placeholder="Enter something..." />
                 </div>
               </div>
@@ -241,13 +283,15 @@ export default {
               <button class="flex items-center cursor-pointer" @click="toggleTooltip('price')">
                 <FunnelIcon class="w-4 h-4" />
               </button>
-              <div :class="{ 'invisible': !showTooltip.price, 'opacity-100': showTooltip.price }" id="tooltip-dark" role="tooltip"
+              <div :class="{ 'invisible': !showTooltip.price, 'opacity-100': showTooltip.price }" id="tooltip-dark"
+                role="tooltip"
                 class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
                 <div
                   class="tooltip-arrow absolute z-10 -top-[1rem] pl-[3.5rem] text-[14px] text-white bg-violet-500 shadow-sm"
                   data-popper-arrow></div>
                 <div class="w-[20%] h-[5%]">
-                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                  <input v-model="typedValue.price" @input="handleFilter('price')"
+                    class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
                     placeholder="Enter something..." />
                 </div>
               </div>
@@ -262,13 +306,15 @@ export default {
               <button class="flex items-center cursor-pointer" @click="toggleTooltip('createdBy')">
                 <FunnelIcon class="w-4 h-4" />
               </button>
-              <div :class="{ 'invisible': !showTooltip.createdBy, 'opacity-100': showTooltip.createdBy }" id="tooltip-dark" role="tooltip"
+              <div :class="{ 'invisible': !showTooltip.createdBy, 'opacity-100': showTooltip.createdBy }"
+                id="tooltip-dark" role="tooltip"
                 class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
                 <div
                   class="tooltip-arrow absolute z-10 -top-[1rem] pl-[6rem] text-[14px] text-white bg-violet-500 shadow-sm"
                   data-popper-arrow></div>
                 <div class="w-[20%] h-[5%]">
-                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                  <input v-model="typedValue.createdBy" @input="handleFilter('createdBy')"
+                    class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
                     placeholder="Enter something..." />
                 </div>
               </div>
@@ -283,13 +329,15 @@ export default {
               <button class="flex items-center cursor-pointer" @click="toggleTooltip('type')">
                 <FunnelIcon class="w-4 h-4" />
               </button>
-              <div :class="{ 'invisible': !showTooltip.type, 'opacity-100': showTooltip.type }" id="tooltip-dark" role="tooltip"
+              <div :class="{ 'invisible': !showTooltip.type, 'opacity-100': showTooltip.type }" id="tooltip-dark"
+                role="tooltip"
                 class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
                 <div
                   class="tooltip-arrow absolute z-10 -top-[1rem] pl-[3.3rem] text-[14px] text-white bg-violet-500 shadow-sm"
                   data-popper-arrow></div>
                 <div class="w-[20%] h-[5%]">
-                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                  <input v-model="typedValue.type" @input="handleFilter('type')"
+                    class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
                     placeholder="Enter something..." />
                 </div>
               </div>
@@ -304,13 +352,15 @@ export default {
               <button class="flex items-center cursor-pointer" @click="toggleTooltip('quantity')">
                 <FunnelIcon class="w-4 h-4" />
               </button>
-              <div :class="{ 'invisible': !showTooltip.quantity, 'opacity-100': showTooltip.quantity }" id="tooltip-dark" role="tooltip"
+              <div :class="{ 'invisible': !showTooltip.quantity, 'opacity-100': showTooltip.quantity }" id="tooltip-dark"
+                role="tooltip"
                 class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
                 <div
                   class="tooltip-arrow absolute z-10 -top-[1rem] pl-[5.2rem] text-[14px] text-white bg-violet-500 shadow-sm"
                   data-popper-arrow></div>
                 <div class="w-[20%] h-[5%]">
-                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                  <input v-model="typedValue.quantity" @input="handleFilter('quantity')"
+                    class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
                     placeholder="Enter something..." />
                 </div>
               </div>
@@ -325,15 +375,17 @@ export default {
               <buttondiv class="flex items-center cursor-pointer" @click="toggleTooltip('delivery')">
                 <FunnelIcon class="w-4 h-4" />
               </buttondiv>
-              <div :class="{ 'invisible': !showTooltip.delivery, 'opacity-100': showTooltip.delivery }" id="tooltip-dark" role="tooltip"
+              <div :class="{ 'invisible': !showTooltip.delivery, 'opacity-100': showTooltip.delivery }" id="tooltip-dark"
+                role="tooltip"
                 class="absolute top-[7.3rem] z-10 inline-block text-sm font-medium border border-violet-500 bg-white text-white rounded-lg shadow-sm tooltip ">
                 <div
                   class="tooltip-arrow absolute z-10 -top-[1rem] pl-[5rem] text-[14px] text-white bg-violet-500 shadow-sm"
                   data-popper-arrow></div>
                 <div class="w-[20%] h-[5%]">
-                  <input class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
+                  <input v-model="typedValue.delivery" @input="handleFilter('delivery')"
+                    class="px-3 py-2 rounded-lg focus:outline-none text-slate-950" type="text"
                     placeholder="Enter something..." />
-                  
+
                 </div>
               </div>
             </div>
@@ -390,4 +442,5 @@ export default {
   position: absolute;
   border-width: 8px;
   border-color: transparent transparent #9061F9 transparent;
-}</style>
+}
+</style>
