@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import SignInView from '../views/SignInView.vue'
+import Layout from '../layout/Layout.vue'
 import store from '../store'
 
 const router = createRouter({
