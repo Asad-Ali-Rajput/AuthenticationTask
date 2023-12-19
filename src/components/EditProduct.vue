@@ -130,8 +130,10 @@ export default {
         async callApi(productId) {
             try {
                 const response = await api.put(`http://localhost:5000/api/product/${productId}`, this.product)
-                this.toast.success(String(response.data.message))
+                if (response.status !== 200) return this.toast.success(String(response.statusText))
+                this.toast.success("Product has been updated")
                 this.fetchProductById(productId)
+                this.$router.go(-1)
             } catch (error) {
                 this.toast.error(String(error))
             }
