@@ -20,22 +20,45 @@ const router = createRouter({
       component: () => import('../views/SignUpView.vue')
     },
     {
-      path: '/home',
-      name: 'home',
-      component: () => import('../views/ProductView.vue'),
+      path: '/',
+      component: Layout,
+      children: [
+        {
+          path: 'home',
+          name: 'home',
+          component: () => import('../views/ProductView.vue'),
+        },
+        {
+          path: 'editProduct/:productId',
+          name: 'editProduct',
+          component: () => import('../views/ProductDetails.vue'),
+          props: true,
+        },
+        {
+          path: 'addProduct/:str',
+          name: 'addProduct',
+          component: () => import('../views/AddProductView.vue'),
+          props: true,
+        },
+      ]
     },
-    {
-      path: '/editProduct/:productId',
-      name: 'editProduct',
-      component: () => import('../views/ProductDetails.vue'),
-      props: true,
-    },
-    {
-      path: '/addProduct/:str',
-      name: 'addProduct',
-      component: () => import('../views/AddProductView.vue'),
-      props: true,
-    },
+    // {
+    //   path: '/home',
+    //   name: 'home',
+    //   component: () => import('../views/ProductView.vue'),
+    // },
+    // {
+    //   path: '/editProduct/:productId',
+    //   name: 'editProduct',
+    //   component: () => import('../views/ProductDetails.vue'),
+    //   props: true,
+    // },
+    // {
+    //   path: '/addProduct/:str',
+    //   name: 'addProduct',
+    //   component: () => import('../views/AddProductView.vue'),
+    //   props: true,
+    // },
     {
       path: '/:pathMatch(.*)*', // Wildcard route
       name: 'notFound',
