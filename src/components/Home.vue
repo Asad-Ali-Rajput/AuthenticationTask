@@ -113,9 +113,6 @@ export default {
         this.toast.error(String(error))
       }
     },
-    handleAddProduct() {
-      this.route.push({ name: 'addProduct', params: { str: 'add' } })
-    },
     handleSort(column) {
       // Toggle sort order if clicking on the same column
       console.log("toggle sort")
@@ -166,17 +163,6 @@ export default {
 
 <template>
   <div class="w-full h-full">
-    <div class="w-full flex justify-end items-center px-4 py-4">
-      <button type="button"
-        class="text-white bg-violet-700 hover:bg-violet-800 focus:ring-4 focus:outline-none focus:ring-violet-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800"
-        @click="handleAddProduct">
-        Add Product
-        <svg class="w-3 h-3 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M7 1v12M1 7h12" />
-        </svg>
-      </button>
-    </div>
     <table class="text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
