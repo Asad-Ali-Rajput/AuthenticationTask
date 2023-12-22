@@ -44,7 +44,6 @@ export default {
         const { token, refreshToken } = response.data
 
         const decodedToken = VueJwtDecode.decode(token)
-        console.log(decodedToken)
         const userEmail = decodedToken.email
         const userId = decodedToken.userId
         this.$store.dispatch('setLoginInfo', {
