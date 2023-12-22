@@ -62,6 +62,10 @@ export default createStore({
     logout({ commit }) {
       commit('clearLoginInfo')
       commit('clearTokens')
+      // Remove the JWT from local storage
+    localStorage.removeItem('vuex-store')
+    // Clear the encrypted state from SecureLS
+    secureLS.removeAll()
     },
     openModal({ commit }) {
       commit('openModal')
