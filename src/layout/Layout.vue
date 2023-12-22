@@ -17,7 +17,3 @@
   };
   </script>
   
-  <style>
-  /* Add styling for your layout component */
-  </style>
-  
