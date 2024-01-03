@@ -7,7 +7,7 @@
 import Dashboard from '../components/Dashboard.vue'
 export default {
     components: {
-        Dashboard
+        <h1>Dashboard<h1>
     }
 }
 </script>
