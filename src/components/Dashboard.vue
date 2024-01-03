@@ -1,7 +1,9 @@
 <template lang="">
     <div>
         <div>Navbar</div>
-        <h1>Hello Dashboard</h1>
+        <div>
+            <div>section 1</div>
+        </>
     </div>
 </template>
 <script>
