@@ -18,7 +18,8 @@
             <div>section 3
                 <div>Sub Section</div>
             </div>
-        </>
+        </div>
+        <div>Footer</div>
     </div>
 </template>
 <script>
