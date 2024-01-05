@@ -1,7 +1,9 @@
 <template lang="">
     <div>
         <div>
-            <div>Navbar</div>
+            <div>
+                <div>Navbar</div>
+            </div>
             <div>Sub Navbar</div>
         </div>
         <div>
