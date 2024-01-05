@@ -32,7 +32,9 @@
                 </div>
             </div>
             <div>section 3
-                <div>Sub Section</div>
+                <div>
+                    <div>Sub Section</div>
+                </div>
             </div>
         </div>
         <div>Footer</div>
