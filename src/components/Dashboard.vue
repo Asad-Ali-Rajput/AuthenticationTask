@@ -37,7 +37,7 @@
                 </div>
             </div>
         </div>
-        <div>Footer</div>
+        <div><div>Footer</div></div>
     </div>
 </template>
 <script>
