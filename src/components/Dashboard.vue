@@ -24,8 +24,12 @@
                 </div>
             </div>
             <div>section 2
-                <div>Sub Section1</div>
-                <div>Sub Section2</div>
+                <div>
+                    <div>Sub Section1</div>
+                </div>
+                <div>
+                    <div>Sub Section2</div>
+                </div>
             </div>
             <div>section 3
                 <div>Sub Section</div>
