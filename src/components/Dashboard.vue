@@ -40,9 +40,10 @@
                     <div>Big Graph section</div>
                 </div>
             </div>
-            <div>section 3
+            <div>
+                <!-- Extra Big Graph section -->
                 <div>
-                    <div>Sub Section</div>
+                    <div>Extra Big Graph Section</div>
                 </div>
             </div>
         </div>
