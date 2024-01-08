@@ -16,18 +16,19 @@
             </div>
         </div>
         <div>
-            <div>section 1
+            <div>
+                <!-- Card section -->
                 <div>
-                    <div>Sub Section1</div>
+                    <div>Small Cards 1 section</div>
                 </div>
                 <div>
-                    <div>Sub Section2</div>
+                    <div>Small Cards 2 section</div>
                 </div>
                 <div>
-                    <div>Sub Section3</div>
+                    <div>Small Cards 3 section</div>
                 </div>
                 <div>
-                    <div>Sub Section4</div>
+                    <div>Small Cards 4 section</div>
                 </div>
             </div>
             <div>section 2
