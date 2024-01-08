@@ -31,12 +31,13 @@
                     <div>Small Cards 4 section</div>
                 </div>
             </div>
-            <div>section 2
+            <div>
+                <!-- Graph section -->
                 <div>
-                    <div>Sub Section1</div>
+                    <div>Small Graph section</div>
                 </div>
                 <div>
-                    <div>Sub Section2</div>
+                    <div>Big Graph section</div>
                 </div>
             </div>
             <div>section 3
