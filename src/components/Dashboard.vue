@@ -11,8 +11,8 @@
             </div>
             <div>
                 <div>
-                    <!-- Sub Navbar -->
-                    <div>Dropdowns</div>
+                    <!-- Sub Navbar Section-->
+                    <div>Dropdowns section</div>
                 </div>
             </div>
         </div>
