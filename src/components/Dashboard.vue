@@ -44,7 +44,7 @@
             <div>
                 <!-- Extra Big Graph section -->
                 <div>
-                    <div>Extra Big Graph Section</div>
+                    <div>Full width Graph Section</div>
                 </div>
             </div>
         </div>
