@@ -9,7 +9,10 @@
                 </div>
             </div>
             <div>
-                <div>Sub Navbar</div>
+                <div>
+                    <!-- Sub Navbar -->
+                    <div>Dropdowns</div>
+                </div>
             </div>
         </div>
         <div>
