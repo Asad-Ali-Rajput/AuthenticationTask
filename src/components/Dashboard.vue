@@ -2,7 +2,11 @@
     <div>
         <div>
             <div>
-                <div>Navbar</div>
+                <div>
+                    <!-- Navbar -->
+                    <div>Logo</div>
+                    <div>Links</div>
+                </div>
             </div>
             <div>
                 <div>Sub Navbar</div>
