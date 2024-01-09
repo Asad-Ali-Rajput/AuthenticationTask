@@ -33,7 +33,7 @@
                 </div>
             </div>
             <div>
-                <!-- Graph Grid section -->
+                <!-- Graph Grid Section -->
                 <div>
                     <div>Small Graph section</div>
                 </div>
