@@ -18,7 +18,7 @@
         </div>
         <div>
             <div>
-                <!--Rectangular Card section -->
+                <!--Rectangular Card Section -->
                 <div>
                     <div>Small Cards 1 section</div>
                 </div>
