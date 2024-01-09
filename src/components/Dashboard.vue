@@ -3,7 +3,7 @@
         <div>
             <div>
                 <div>
-                    <!-- Navbar -->
+                    <!-- Navbar Section-->
                     <div>Logo</div>
                     <div>Links</div>
                     <div>Profile Dropdown</div>
