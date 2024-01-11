@@ -13,7 +13,7 @@
             <div>
                 <div>
                     <!-- Sub Navbar dropdowns Section-->
-                    <div>Dropdowns section</div>
+                    <div>Dropdowns section for components or separate pages</div>
                 </div>
             </div>
         </div>
