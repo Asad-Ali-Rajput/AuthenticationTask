@@ -41,6 +41,7 @@
                     <div>Small Graph section</div>
                 </div>
                 <div>
+                    <div>Edit button</div>
                     <div>Big Graph section</div>
                 </div>
             </div>
