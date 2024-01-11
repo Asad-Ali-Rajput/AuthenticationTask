@@ -20,6 +20,7 @@
         <div>
             <div>
                 <!--Rectangular Card Section -->
+                <div>Edit button</div>
                 <div>
                     <div>Small Cards 1 section</div>
                 </div>
