@@ -37,6 +37,7 @@
             <div>
                 <!-- Graph Grid Section -->
                 <div>
+                    <div>Edit button</div>
                     <div>Small Graph section</div>
                 </div>
                 <div>
