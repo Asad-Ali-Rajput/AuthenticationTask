@@ -6,6 +6,7 @@
                     <!-- Navbar Section-->
                     <div>Logo</div>
                     <div>Links</div>
+                    <div>Search</div>
                     <div>Profile Dropdown</div>
                 </div>
             </div>
