@@ -45,6 +45,12 @@ const router = createRouter({
           component: () => import('../views/AddProductView.vue'),
           props: true,
         },
+        {
+          path: 'edinspactor',
+          name: 'edInspactor',
+          component: () => import('../views/EDInspactorView.vue'),
+          props: true,
+        },
       ]
     },
     // {
