@@ -1,6 +1,6 @@
 <template lang="">
     <div>
-        
+        <h1>Hello EDI Inspactor</h1>
     </div>
 </template>
 <script>
