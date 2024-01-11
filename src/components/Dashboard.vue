@@ -48,6 +48,7 @@
             <div>
                 <!-- Extra Big Graph section -->
                 <div>
+                    <div>Edit button</div>
                     <div>Full width Graph section</div>
                 </div>
             </div>
