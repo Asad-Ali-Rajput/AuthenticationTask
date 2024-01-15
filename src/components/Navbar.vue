@@ -1,12 +1,15 @@
 <template>
   <div>
-    <nav class="bg-white border-gray-200 dark:bg-gray-900">
+    <nav class="fixed bg-white border-gray-200 dark:bg-gray-900">
       <div class="w-screen flex flex-wrap items-center justify-between p-4">
         <a href="https://flowbite.com/" class="flex items-center rtl:space-x-reverse">
           <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" />
           <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
         </a>
         <div class="flex items-center md:space-x-0 rtl:space-x-reverse">
+          <button @click="handleEDInspector">
+            <PencilSquareIcon class="w-6 h-6 mr-4" />
+          </button>
           <button @click="handleDashboard">
             <MoonIcon class="w-6 h-6 mr-4" />
           </button>
@@ -58,10 +61,11 @@
 
 <script>
 import { useRouter } from 'vue-router'
-import { MoonIcon } from '@heroicons/vue/24/outline'
+import { MoonIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
 export default {
   components: {
     MoonIcon,
+    PencilSquareIcon,
   },
   data() {
     return {
@@ -71,6 +75,9 @@ export default {
     }
   },
   methods: {
+    handleEDInspector() {
+      this.route.push("/edinspactor")
+    },
     handleDashboard() {
       this.route.push("/dashboard")
     },
