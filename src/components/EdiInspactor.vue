@@ -177,7 +177,6 @@ export default {
                     }
                 }
             }
-            console.log(this.singleArray)
         },
         updateJsonFileData() {
             const words = this.textFileContents.split("*");
