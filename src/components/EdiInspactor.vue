@@ -189,7 +189,6 @@ export default {
                             if (word === key) {
                                 this.headerText = key;
                                 this.bodyText = arr[key];
-                                console.log(this.headerText, this.bodyText);
                             }
                             if (Object.prototype.hasOwnProperty.call(this.jsonFileData, key)) {
                                 const value = this.jsonFileData[key];
