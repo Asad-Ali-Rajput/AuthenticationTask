@@ -35,7 +35,7 @@
                 </div>
                 
 
-                <!-- <div class="w-1/2 p-2 tracking-wide overflow-y-auto" style="height: 40rem; scrollbar-color: #cbd5e1 #1e293b;">
+                <div class="w-1/2 p-2 tracking-wide overflow-y-auto" style="height: 40rem; scrollbar-color: #cbd5e1 #1e293b;">
             <div>
                 <div class="" v-if="(textFileContents)">
                     <template v-for="(line, lIndex) in lines" :key="line">
@@ -82,7 +82,7 @@
                     </template>
                 </div>
             </div>
-        </div> -->
+        </div>
             </div>
         </div>
     </div>
